@@ -1,7 +1,5 @@
 <template>
-    <div id="app">
-        <router-view></router-view>
-    </div>
+    <h1>Material Info</h1>
 </template>
 
 <script setup lang="ts">
