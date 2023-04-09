@@ -1,7 +1,13 @@
 <template>
-    <div id="app">
+    <el-header height="100">
+        <h1>Materials Data</h1>
+    </el-header>
+    <el-main>
         <router-view></router-view>
-    </div>
+    </el-main>
+    <!--        <el-footer>-->
+    <!--            Footer-->
+    <!--        </el-footer>-->
 </template>
 
 <script setup lang="ts">
