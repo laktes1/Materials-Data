@@ -1,0 +1,58 @@
+@mixin keyframes($animationName) {
+  @-webkit-keyframes #{$animationName} {
+    @content;
+  }
+  @-moz-keyframes #{$animationName} {
+    @content;
+  }
+  @-o-keyframes #{$animationName} {
+    @content;
+  }
+  @keyframes #{$animationName} {
+    @content;
+  }
+}
+
+
+@mixin animation ($animation, $duration, $delay: 0, $direction: forward, $fillMode: fowards, $iterationCount: 1) {
+  -webkit-animation-delay: $delay;
+  -webkit-animation-duration: $duration;
+  -webkit-animation-name: $animation;
+  -webkit-animation-fill-mode: $fillMode;
+  -webkit-animation-direction: $direction;
+  -webkit-animation-iteration-count: $iterationCount;
+
+  -moz-animation-delay: $delay;
+  -moz-animation-duration: $duration;
+  -moz-animation-name: $animation;
+  -moz-animation-fill-mode: $fillMode;
+  -moz-animation-direction: $direction;
+  -moz-animation-iteration-count: $iterationCount;
+
+  -o-animation-delay: $delay;
+  -o-animation-duration: $duration;
+  -o-animation-name: $animation;
+  -o-animation-fill-mode: $fillMode;
+  -o-animation-direction: $direction;
+  -o-animation-iteration-count: $iterationCount;
+
+  animation-delay: $delay;
+  animation-duration: $duration;
+  animation-name: $animation;
+  animation-fill-mode: $fillMode;
+  animation-direction: $direction;
+  animation-iteration-count: $iterationCount;
+}
+
+
+@mixin transition($duration, $property: all, $easing: linear) {
+  transition: $property $duration $easing;
+  -webkit-transition: $property $duration $easing;
+  -moz-transition: $property $duration $easing;
+  -o-transition: $property $duration $easing;
+}
+
+@mixin rotation($deg, $duration) {
+  transform: rotate($deg);
+  @include transition($duration);
+}
