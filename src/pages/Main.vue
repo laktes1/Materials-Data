@@ -68,6 +68,7 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue'
+
 const input = ref('')
 const selectedMode = ref(0)
 const selectedValue = ref()
