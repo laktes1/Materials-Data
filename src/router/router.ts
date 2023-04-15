@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import CIFPage from '../pages/CIF-Page.vue'
-import OUTPage from '../pages/OUT-Page.vue'
+import CIFPage from '../pages/CIF.vue'
+import OUTPage from '../pages/OUT.vue'
+import FilesPage from '../pages/Files.vue'
 import materialInformation from '../pages/MaterialInformation.vue'
 
 const routes = [
@@ -15,6 +16,10 @@ const routes = [
     {
         path: '/outPage',
         component: OUTPage,
+    },
+    {
+        path: '/filesPage',
+        component: FilesPage,
     },
     {
         path: '/materialInfo',
