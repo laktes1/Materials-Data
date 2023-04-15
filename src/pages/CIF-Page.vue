@@ -1,7 +1,7 @@
 <template>
     <el-card>
         <el-row>
-            <h3>Искать в базе</h3>
+            <h2>Поиск по CIF-файлам</h2>
         </el-row>
 
         <el-row :gutter="25" class="m-t-15" align="middle">
