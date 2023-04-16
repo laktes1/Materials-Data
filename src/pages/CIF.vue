@@ -33,7 +33,7 @@
             <el-col :span="4">
                 Режим
             </el-col>
-            <el-col :span="4">
+            <el-col :span="16">
                 <el-radio-group v-model="selectedMode">
                     <el-radio size="large" :label="0" >
                         Полный CIF
@@ -43,10 +43,9 @@
                     </el-radio>
                 </el-radio-group>
             </el-col>
-        </el-row>
-
-        <el-row class="m-t-15" align="middle" justify="end">
-            <el-button type="primary" :icon="Search" size="large">Поиск</el-button>
+            <el-col :span="4" align="end">
+                <el-button type="primary" :icon="Search" size="large">Поиск</el-button>
+            </el-col>
         </el-row>
     </el-card>
 
@@ -60,6 +59,10 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue'
+import { inject } from 'vue'
+const globalVariables = inject('globalVariables')
+
+console.log(globalVariables)
 
 const findingValue = ref('')
 const selectedMode = ref(0)
