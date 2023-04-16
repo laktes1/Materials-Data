@@ -1,8 +1,8 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import CIFPage from '../pages/CIF.vue'
-import OUTPage from '../pages/OUT.vue'
-import FilesPage from '../pages/Files.vue'
-import materialInformation from '../pages/MaterialInformation.vue'
+import CIFPage from '@/pages/CIF.vue'
+import OUTPage from '@/pages/OUT.vue'
+import FilesPage from '@/pages/Files.vue'
+import materialInformation from '@/pages/MaterialInformation.vue'
 
 const routes = [
     {
