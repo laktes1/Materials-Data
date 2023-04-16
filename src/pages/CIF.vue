@@ -62,8 +62,6 @@ import { ref, reactive } from 'vue'
 import { inject } from 'vue'
 const globalVariables = inject('globalVariables')
 
-console.log(globalVariables)
-
 const findingValue = ref('')
 const selectedMode = ref(0)
 const selectedValue = ref()

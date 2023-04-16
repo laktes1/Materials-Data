@@ -4,7 +4,7 @@
             <h1>Materials Data</h1>
         </el-header>
         <el-container>
-            <el-aside width="200px">
+            <el-aside width="200px" v-show="router.currentRoute.value.path !== '/'">
                 <side-bar-menu></side-bar-menu>
             </el-aside>
             <el-main>
@@ -16,7 +16,9 @@
 
 <script setup lang="ts">
 import SideBarMenu from "@/components/SideBarMenu.vue";
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 </script>
 
 <style scoped>
