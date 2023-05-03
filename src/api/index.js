@@ -1,7 +1,11 @@
-import cifApi from './CIFApi.api'
+import cifAPI from "./CIFAPI";
+import OtherAPI from "./OtherAPI";
+import outAPI from "./OUTAPI";
 
 const Api = {
-    cif: cifApi,
+    CIF: cifAPI,
+    OTHER: OtherAPI,
+    OUT: outAPI,
 }
 
 export default Api
