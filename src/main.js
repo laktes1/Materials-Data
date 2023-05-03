@@ -5,7 +5,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import locale from 'element-plus/lib/locale/lang/ru'
 import router from '@/router/router'
-import Api from '@/api'
+import {Api} from '@/api'
 
 const app = createApp(App)
 
@@ -17,6 +17,7 @@ const globalVariables = {
     $api: Api,
 }
 
+console.log(globalVariables);
 app.provide('globalVariables', globalVariables)
 
 app.mount('#app')
