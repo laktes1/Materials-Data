@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const service = axios.create({
-    baseURL: `${window.location.origin}/api`, // TODO maybe change
+    baseURL: import.meta.env.VITE_APP_API_URL
 })
 
 export default service
