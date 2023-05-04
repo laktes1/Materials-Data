@@ -4,30 +4,48 @@
             <el-row>
                 <h2>Поиск по CIF-файлам</h2>
             </el-row>
+            <el-row class="m-t-15">
+                <el-collapse class="collapse-container">
+                    <el-collapse-item name="Группы CIF-файла">
+                        <template #title>
+                            <p class="collapse-header">
+                                Группы CIF-файла
+                            </p>
+                        </template>
+                        <search-component :structure="structure">
 
-            <el-row :gutter="25" class="m-t-15" align="middle">
-                <el-col :span="4">
-                    Поле
-                </el-col>
-                <el-col :span="20">
-                    <el-select v-model="selectedValue" size="large" :span="20" class="w-p-100">
-                        <el-option
-                            v-for="item in groupsNames"
-                            :key="item"
-                            :label="item"
-                            :value="item"
-                        />
-                    </el-select>
-                </el-col>
-            </el-row>
+                        </search-component>
+                    </el-collapse-item>
 
-            <el-row :gutter="25" class="m-t-15" align="middle">
-                <el-col :span="4">
-                    Значение
-                </el-col>
-                <el-col :span="20">
-                    <el-input v-model="findingValue" clearable />
-                </el-col>
+                    <el-collapse-item name="Загрузка CIF-файлов">
+                        <template #title>
+                            <p class="collapse-header">
+                                Загрузка CIF-файлов
+                            </p>
+                        </template>
+
+                        <el-upload
+                            v-model:file-list="fileList"
+                            ref="uploadRef"
+                            class="upload-demo m-t-15"
+                            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                            multiple
+                            :auto-upload="false"
+                        >
+                            <template #trigger>
+                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>
+                            </template>
+                            <div class="el-upload el-upload--text">
+                                <el-button type="success" @click="submitUpload">
+                                    Отправить на сервер
+                                </el-button>
+                            </div>
+
+
+                        </el-upload>
+
+                    </el-collapse-item>
+                </el-collapse>
             </el-row>
 
             <el-row :gutter="25" class="m-t-15" align="middle">
@@ -45,12 +63,19 @@
                     </el-radio-group>
                 </el-col>
                 <el-col :span="4" align="end">
-                    <el-button type="primary" :icon="Search" size="large">Поиск</el-button>
+                    <el-button
+                        type="primary"
+                        :icon="Search"
+                        size="large"
+                        @click="findCIFs"
+                    >
+                        Поиск
+                    </el-button>
                 </el-col>
             </el-row>
         </el-card>
 
-        <el-card class="m-t-15">
+        <el-card class="m-t-15" v-loading="cifsLoading">
             <el-table :data="mockObjects" border>
                 <el-table-column v-for="key in groupsNames" :key="key" :prop="key" :label="key" width="250" />
             </el-table>
@@ -60,18 +85,33 @@
 
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { ref, reactive, Ref, watch } from 'vue'
+import { ref, reactive, Ref, watch, toRaw, } from 'vue'
 import { Api } from '@/api'
 import {IGetGroupsRequest} from "@/types/Requests";
 import {IGetGroupsResponse} from "@/types/Responses";
 import {dataViewFormats, fileTypes} from "@/types/enums";
+import SearchComponent from "@/components/searchComponent.vue";
+import type { UploadInstance, UploadUserFile } from 'element-plus'
 
-console.log('API', Api);
-const findingValue = ref('')
+const uploadRef = ref<UploadInstance>()
+
+const submitUpload = () => {
+    uploadRef.value!.submit()
+    // uploadRef.value!.clearFiles()
+}
+
+const fileList = ref<UploadUserFile[]>([])
+
 const selectedMode = ref('divided') as Ref<dataViewFormats>
-const selectedValue = ref()
 
 const groupsLoading = ref(true)
+
+const cifsLoading = ref(false)
+const cifsCount = ref(10)
+const delimeter = ref(1)
+const structure: Record<string, any> = reactive({})
+const cifs = ref([])
+const executionTime = ref(0)
 
 const mockObj = reactive({
     'Идентификатор': 'c5434530fs-sdas-hfdghf',
@@ -86,8 +126,9 @@ const mockObj = reactive({
 })
 
 const groupsNames = ref(Object.keys(mockObj))
+// const groupsNames = ref([])
 
-const mockObjects = reactive([
+let mockObjects = [
     {
         'Идентификатор': 'c5434530fs-sdas-hfdghf',
         'default group': 'adult-creation-date 2015-07-29',
@@ -110,13 +151,18 @@ const mockObjects = reactive([
         'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
         'one of': null,
     },
-])
+]
 
+//TODO mock потом удалить эти строчки
 mockObjects.forEach(chemicalData => {
     Object.entries(chemicalData).forEach(([key, value]) => {
         chemicalData[key] = JSON.stringify(value)
     })
 })
+groupsNames.value.forEach((group: string) => {
+    structure[group] = ''
+})
+console.log(toRaw(structure));
 
 const getGroups = async () => {
     groupsLoading.value = true
@@ -125,20 +171,42 @@ const getGroups = async () => {
         dataViewFormat: selectedMode.value,
     }
 
-    Api.OTHER.getGroups(request).then((response: IGetGroupsResponse) => {
-        console.log('response', response);
-        selectedMode.value = response.dataViewFormat
-        groupsNames.value = [...response.structure]
-    }).finally(async() => {
-        await new Promise(((resolve, reject) => {
-            setTimeout(resolve, 1000);
-        }))
-        groupsLoading.value = false
-    })
+    try {
+        const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
+        // selectedMode.value = response.dataViewFormat
+        // groupsNames.value = [...response.structure]
+    } catch (e) {
+        console.error(e);
+    }
+
+    groupsLoading.value = false
+}
+
+const findCIFs = async () => {
+    cifsLoading.value = true
+    const request: any = {
+        count: cifsCount.value,
+        delimeter: delimeter.value,
+        dataViewFormat: selectedMode.value,
+        structure: toRaw(structure)
+    }
+
+    try {
+        const response = await Api.CIF.getCIFData(request)
+        executionTime.value = response.executionTime
+        mockObjects = response.data_from_DB
+    } catch (e) {
+        console.error(e);
+    }
+
+    cifsLoading.value = false
 }
 
 watch(selectedMode, newValue => {
     getGroups()
+    // groupsNames.value.forEach((group: string) => {
+    //     structure[group] = ''
+    // })
 })
 
 getGroups()
@@ -146,5 +214,4 @@ getGroups()
 </script>
 
 <style scoped>
-
 </style>
