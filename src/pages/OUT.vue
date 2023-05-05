@@ -1,52 +1,175 @@
 <template>
-    <el-card>
-        <el-row>
-            <h2>Поиск по OUT-файлам</h2>
-        </el-row>
+    <el-container direction="vertical" v-loading="groupsLoading">
+        <el-card>
+            <el-row>
+                <h2>Поиск по OUT-файлам</h2>
+            </el-row>
+            <el-row class="m-t-15">
+                <el-collapse class="collapse-container">
+                    <el-collapse-item name="Группы OUT-файла">
+                        <template #title>
+                            <p class="collapse-header">
+                                Группы OUT-файла
+                            </p>
+                        </template>
+                        <search-component :structure="structure">
 
-        <el-row :gutter="25" class="m-t-15" align="middle">
-            <el-col :span="4">
-                Поле
-            </el-col>
-            <el-col :span="20">
-                <el-select v-model="selectedValue" size="large" :span="20" class="w-p-100">
-                    <el-option
-                        v-for="item in mockKeys"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                    />
-                </el-select>
-            </el-col>
-        </el-row>
+                        </search-component>
+                    </el-collapse-item>
 
-        <el-row :gutter="25" class="m-t-15" align="middle">
-            <el-col :span="4">
-                Значение
-            </el-col>
-            <el-col :span="20">
-                <el-input v-model="findingValue" clearable />
-            </el-col>
-        </el-row>
+                    <el-collapse-item name="Загрузка OUT-файлов">
+                        <template #title>
+                            <p class="collapse-header">
+                                Загрузка OUT-файлов
+                            </p>
+                        </template>
+                        <!--TODO mock данные, потом удалить-->
+                        <el-upload
+                            v-model:file-list="fileList"
+                            ref="uploadRef"
+                            class="upload-demo m-t-15"
+                            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                            multiple
+                            :auto-upload="false"
+                        >
+                            <template #trigger>
+                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>
+                            </template>
+                            <div class="el-upload el-upload--text">
+                                <el-button type="success" @click="submitUpload">
+                                    Отправить на сервер
+                                </el-button>
+                            </div>
+                        </el-upload>
 
-        <el-row class="m-t-15" align="middle" justify="end">
-            <el-button type="primary" :icon="Search" size="large">Поиск</el-button>
-        </el-row>
-    </el-card>
+                        <!--TODO mock данные, потом удалить-->
+                        <!--                        <el-upload-->
+                        <!--                            v-model:file-list="fileList"-->
+                        <!--                            ref="uploadRef"-->
+                        <!--                            class="upload-demo m-t-15"-->
+                        <!--                            :action="fileApiActionUrl"-->
+                        <!--                            multiple-->
+                        <!--                            :auto-upload="false"-->
+                        <!--                        >-->
+                        <!--                            <template #trigger>-->
+                        <!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
+                        <!--                            </template>-->
+                        <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+                        <!--                                <el-button type="success" @click="submitUpload">-->
+                        <!--                                    Отправить на сервер-->
+                        <!--                                </el-button>-->
+                        <!--                            </div>-->
+                        <!--                        </el-upload>-->
 
-    <el-card class="m-t-15">
-        <el-table :data="mockObjects" border>
-            <el-table-column v-for="key in mockKeys" :key="key" :prop="key" :label="key" width="250" />
-        </el-table>
-    </el-card>
+                        <!--                        <el-upload-->
+                        <!--                            v-model:file-list="fileList"-->
+                        <!--                            ref="uploadRef"-->
+                        <!--                            class="upload-demo m-t-15"-->
+                        <!--                            :before-upload="handleUpload"-->
+                        <!--                            multiple-->
+                        <!--                            :auto-upload="false"-->
+                        <!--                            action=""-->
+                        <!--                        >-->
+                        <!--                            <template #trigger>-->
+                        <!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
+                        <!--                            </template>-->
+                        <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+                        <!--                                <el-button type="success" @click="submitUpload">-->
+                        <!--                                    Отправить на сервер-->
+                        <!--                                </el-button>-->
+                        <!--                            </div>-->
+                        <!--                        </el-upload>-->
+
+                    </el-collapse-item>
+                </el-collapse>
+            </el-row>
+
+            <el-row :gutter="25" class="m-t-15" align="middle">
+                <el-col :span="4">
+                    Режим
+                </el-col>
+                <el-col :span="16">
+                    <el-radio-group v-model="selectedMode">
+                        <el-radio size="large" label="divided">
+                            Частичный OUT
+                        </el-radio>
+                        <el-radio size="large" label="full" >
+                            Полный OUT
+                        </el-radio>
+                    </el-radio-group>
+                </el-col>
+                <el-col :span="4" align="end">
+                    <el-button
+                        type="primary"
+                        :icon="Search"
+                        size="large"
+                        @click="findOUTs"
+                    >
+                        Поиск
+                    </el-button>
+                </el-col>
+            </el-row>
+        </el-card>
+
+        <el-card class="m-t-15" v-loading="outsLoading">
+            <el-table :data="mockObjects" border>
+                <el-table-column
+                    v-for="key in groupsNames"
+                    :key="key"
+                    :prop="key"
+                    :label="key"
+                    width="250"
+                />
+            </el-table>
+        </el-card>
+    </el-container>
 </template>
 
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { ref, reactive } from 'vue'
+import { ref, reactive, Ref, watch, toRaw, onMounted } from 'vue'
+import { Api } from '@/api'
+import {IGetGroupsRequest} from "@/types/Requests";
+import {IGetGroupsResponse} from "@/types/Responses";
+import {dataViewFormats, fileTypes} from "@/types/enums";
+import SearchComponent from "@/components/searchComponent.vue";
+import type { UploadInstance, UploadUserFile } from 'element-plus'
 
-const findingValue = ref('')
-const selectedValue = ref()
+const uploadRef = ref<UploadInstance>()
+
+// const handleUpload = (files: File) => {
+//     console.log(files)
+//     const formData = new FormData();
+//     Array.from(files).forEach(file => {
+//         formData.append('files', file);
+//     });
+//     console.log(formData)
+//     Api.OUT.uploadCIFFile(formData)
+//         .then(response => {
+//             console.log(response)
+//         })
+//         .catch(error => {
+//             console.log(error)
+//         });
+// }
+const submitUpload = () => {
+    uploadRef.value!.submit()
+    // uploadRef.value!.clearFiles()
+}
+
+const fileList = ref<UploadUserFile[]>([])
+const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_out_file/`
+
+const selectedMode = ref('divided') as Ref<dataViewFormats>
+
+const groupsLoading = ref(true)
+
+const outsLoading = ref(false)
+const outsCount = ref(10)
+const delimeter = ref(1)
+const structure: Record<string, any> = reactive({})
+const outs = ref([])
+const executionTime = ref(0)
 
 const mockObj = reactive({
     'Идентификатор': 'c5434530fs-sdas-hfdghf',
@@ -54,22 +177,25 @@ const mockObj = reactive({
     'submitions details': 'null',
     'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
     'title and author': JSON.stringify({author: 'Jackson Peter', title: 'Test'}),
-    'test': 'test null',
+    'test': null,
     'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
     'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
     'one of': null,
 })
 
-const mockKeys = reactive(Object.keys(mockObj))
+//TODO mock потом удалить эти строчки
+const groupsNames = ref(Object.keys(mockObj))
+// const groupsNames = ref([])
 
-const mockObjects = reactive([
+//TODO mock потом удалить эти строчки
+let mockObjects = [
     {
         'Идентификатор': 'c5434530fs-sdas-hfdghf',
         'default group': 'adult-creation-date 2015-07-29',
         'submitions details': 'null',
         'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
         'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
+        'test': null,
         'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
         'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
         'one of': null,
@@ -80,51 +206,75 @@ const mockObjects = reactive([
         'submitions details': 'null',
         'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
         'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
+        'test': null,
         'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
         'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
         'one of': null,
     },
-    {
-        'Идентификатор': 'c5434530fs-sdas-hfdghf',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
-    },
-    {
-        'Идентификатор': 'c5434530fs-sdas-hfdghf',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
-    },
-    {
-        'Идентификатор': 'c5434530fs-sdas-hfdghf',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
-    },
-])
+]
 
+//TODO mock потом удалить эти строчки
 mockObjects.forEach(chemicalData => {
     Object.entries(chemicalData).forEach(([key, value]) => {
         chemicalData[key] = JSON.stringify(value)
     })
 })
+groupsNames.value.forEach((group: string) => {
+    structure[group] = ''
+})
+
+const getGroups = async () => {
+    groupsLoading.value = true
+    const request: IGetGroupsRequest = {
+        fileType: fileTypes.OUT,
+        dataViewFormat: selectedMode.value,
+    }
+
+    try {
+        // const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
+        // selectedMode.value = response.dataViewFormat
+        // groupsNames.value = [...response.structure]
+    } catch (e) {
+        console.error(e);
+    }
+
+    groupsLoading.value = false
+}
+
+watch(selectedMode, newValue => {
+    getGroups()
+    groupsNames.value.forEach((group: string) => {
+        structure[group] = ''
+    })
+})
+
+const findOUTs = async () => {
+    outsLoading.value = true
+    const request: any = {
+        count: outsCount.value,
+        delimeter: delimeter.value,
+        dataViewFormat: selectedMode.value,
+        structure: toRaw(structure)
+    }
+
+    try {
+        const response = await Api.OUT.getOUTData(request)
+        executionTime.value = response.executionTime
+        // outs.value = response.data_from_DB
+        //TODO mock потом удалить эти строчки
+        mockObjects = response.data_from_DB
+
+    } catch (e) {
+        console.error(e);
+    }
+
+    outsLoading.value = false
+}
+
+onMounted(() => {
+    getGroups()
+})
+
 </script>
 
 <style scoped>

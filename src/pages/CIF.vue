@@ -113,7 +113,13 @@
 
         <el-card class="m-t-15" v-loading="cifsLoading">
             <el-table :data="mockObjects" border>
-                <el-table-column v-for="key in groupsNames" :key="key" :prop="key" :label="key" width="250" />
+                <el-table-column
+                    v-for="key in groupsNames"
+                    :key="key"
+                    :prop="key"
+                    :label="key"
+                    width="250"
+                />
             </el-table>
         </el-card>
     </el-container>

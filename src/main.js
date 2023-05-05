@@ -13,11 +13,11 @@ app
     .use(ElementPlus, { locale })
     .use(router)
 
-const globalVariables = {
-    $api: Api,
-}
-
-console.log(globalVariables);
-app.provide('globalVariables', globalVariables)
+// const globalVariables = {
+//     $api: Api,
+// }
+//
+// console.log(globalVariables);
+// app.provide('globalVariables', globalVariables)
 
 app.mount('#app')
