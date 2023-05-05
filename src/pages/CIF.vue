@@ -23,7 +23,7 @@
                                 Загрузка CIF-файлов
                             </p>
                         </template>
-
+                        <!--TODO mock данные, потом удалить-->
                         <el-upload
                             v-model:file-list="fileList"
                             ref="uploadRef"
@@ -40,9 +40,45 @@
                                     Отправить на сервер
                                 </el-button>
                             </div>
-
-
                         </el-upload>
+
+                        <!--TODO mock данные, потом удалить-->
+<!--                        <el-upload-->
+<!--                            v-model:file-list="fileList"-->
+<!--                            ref="uploadRef"-->
+<!--                            class="upload-demo m-t-15"-->
+<!--                            :action="fileApiActionUrl"-->
+<!--                            multiple-->
+<!--                            :auto-upload="false"-->
+<!--                        >-->
+<!--                            <template #trigger>-->
+<!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
+<!--                            </template>-->
+<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+<!--                                <el-button type="success" @click="submitUpload">-->
+<!--                                    Отправить на сервер-->
+<!--                                </el-button>-->
+<!--                            </div>-->
+<!--                        </el-upload>-->
+
+<!--                        <el-upload-->
+<!--                            v-model:file-list="fileList"-->
+<!--                            ref="uploadRef"-->
+<!--                            class="upload-demo m-t-15"-->
+<!--                            :before-upload="handleUpload"-->
+<!--                            multiple-->
+<!--                            :auto-upload="false"-->
+<!--                            action=""-->
+<!--                        >-->
+<!--                            <template #trigger>-->
+<!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
+<!--                            </template>-->
+<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+<!--                                <el-button type="success" @click="submitUpload">-->
+<!--                                    Отправить на сервер-->
+<!--                                </el-button>-->
+<!--                            </div>-->
+<!--                        </el-upload>-->
 
                     </el-collapse-item>
                 </el-collapse>
@@ -85,7 +121,7 @@
 
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { ref, reactive, Ref, watch, toRaw, } from 'vue'
+import { ref, reactive, Ref, watch, toRaw, onMounted } from 'vue'
 import { Api } from '@/api'
 import {IGetGroupsRequest} from "@/types/Requests";
 import {IGetGroupsResponse} from "@/types/Responses";
@@ -95,12 +131,28 @@ import type { UploadInstance, UploadUserFile } from 'element-plus'
 
 const uploadRef = ref<UploadInstance>()
 
+// const handleUpload = (files: File) => {
+//     console.log(files)
+//     const formData = new FormData();
+//     Array.from(files).forEach(file => {
+//         formData.append('files', file);
+//     });
+//     console.log(formData)
+//     Api.CIF.uploadCIFFile(formData)
+//         .then(response => {
+//             console.log(response)
+//         })
+//         .catch(error => {
+//             console.log(error)
+//         });
+// }
 const submitUpload = () => {
     uploadRef.value!.submit()
     // uploadRef.value!.clearFiles()
 }
 
 const fileList = ref<UploadUserFile[]>([])
+const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_cif_file/`
 
 const selectedMode = ref('divided') as Ref<dataViewFormats>
 
@@ -125,9 +177,11 @@ const mockObj = reactive({
     'one of': null,
 })
 
+//TODO mock потом удалить эти строчки
 const groupsNames = ref(Object.keys(mockObj))
 // const groupsNames = ref([])
 
+//TODO mock потом удалить эти строчки
 let mockObjects = [
     {
         'Идентификатор': 'c5434530fs-sdas-hfdghf',
@@ -162,7 +216,6 @@ mockObjects.forEach(chemicalData => {
 groupsNames.value.forEach((group: string) => {
     structure[group] = ''
 })
-console.log(toRaw(structure));
 
 const getGroups = async () => {
     groupsLoading.value = true
@@ -172,7 +225,7 @@ const getGroups = async () => {
     }
 
     try {
-        const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
+        // const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
         // selectedMode.value = response.dataViewFormat
         // groupsNames.value = [...response.structure]
     } catch (e) {
@@ -181,6 +234,13 @@ const getGroups = async () => {
 
     groupsLoading.value = false
 }
+
+watch(selectedMode, newValue => {
+    getGroups()
+    groupsNames.value.forEach((group: string) => {
+        structure[group] = ''
+    })
+})
 
 const findCIFs = async () => {
     cifsLoading.value = true
@@ -194,7 +254,10 @@ const findCIFs = async () => {
     try {
         const response = await Api.CIF.getCIFData(request)
         executionTime.value = response.executionTime
+        // cifs.value = response.data_from_DB
+        //TODO mock потом удалить эти строчки
         mockObjects = response.data_from_DB
+
     } catch (e) {
         console.error(e);
     }
@@ -202,16 +265,12 @@ const findCIFs = async () => {
     cifsLoading.value = false
 }
 
-watch(selectedMode, newValue => {
+onMounted(() => {
     getGroups()
-    // groupsNames.value.forEach((group: string) => {
-    //     structure[group] = ''
-    // })
 })
-
-getGroups()
 
 </script>
 
 <style scoped>
+
 </style>
