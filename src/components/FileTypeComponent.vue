@@ -7,7 +7,7 @@
             <el-card>
                 <el-row class="m-t-15">
                 <el-collapse v-model="activeNames" class="collapse-container">
-                    <el-collapse-item name="Поиск" class="m-t-15">
+                    <el-collapse-item name="Поиск">
                         <template #title>
                             <p class="collapse-header">
                                 Поиск {{materialName}}-файлов
@@ -19,7 +19,7 @@
 
                         <el-row :gutter="25" class="m-t-15" align="middle">
                             <el-col :span="4">
-                                Режим
+                                <h3>Режим поиска</h3>
                             </el-col>
                             <el-col :span="16">
                                 <el-radio-group v-model="selectedMode">
@@ -70,7 +70,7 @@
                         <!--                            </div>-->
                         <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
                         <!--                                <el-button type="warning" @click="clearFiles" class="m-r-15">-->
-                        <!--                                    Убрать файлы-->
+                        <!--                                    Очистить файлы-->
                         <!--                                </el-button>-->
                         <!--                            </div>-->
                         <!--                        </el-upload>-->
@@ -95,7 +95,7 @@
                             </div>
                             <div class="el-upload el-upload--text">
                                 <el-button type="warning" @click="clearFiles" class="m-r-15">
-                                    Убрать файлы
+                                    Очистить файлы
                                 </el-button>
                             </div>
                         </el-upload>
@@ -124,7 +124,7 @@
                     :key="key"
                     :prop="key"
                     :label="key"
-                    width="250"
+                    :width="calculateSize(mockObjects[0][key], 100, 500)"
                 />
             </el-table>
         </el-card>
@@ -141,6 +141,7 @@ import {dataViewFormats, fileTypes} from "@/types/enums";
 import SearchComponent from "@/components/searchComponent.vue";
 import type { UploadInstance, UploadUserFile } from 'element-plus'
 import axios from "axios";
+import {calculateSize} from "@/helpers/Utils";
 
 const props = defineProps({
     fileType: {
