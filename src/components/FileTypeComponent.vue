@@ -2,51 +2,78 @@
     <el-container direction="vertical" v-loading="groupsLoading">
         <el-card>
             <el-row>
-                <h2>Поиск по {{materialName}}-файлам</h2>
+                <h2>Работа с {{materialName}}-файлами</h2>
             </el-row>
-            <el-row class="m-t-15">
-                <el-collapse class="collapse-container">
-                    <el-collapse-item :name="'Группы' + materialName + '-файла'">
+            <el-card>
+                <el-row class="m-t-15">
+                <el-collapse v-model="activeNames" class="collapse-container">
+                    <el-collapse-item name="Поиск" class="m-t-15">
                         <template #title>
                             <p class="collapse-header">
-                                Группы {{materialName}}-файла
+                                Поиск {{materialName}}-файлов
                             </p>
                         </template>
                         <search-component :structure="structure">
 
                         </search-component>
+
+                        <el-row :gutter="25" class="m-t-15" align="middle">
+                            <el-col :span="4">
+                                Режим
+                            </el-col>
+                            <el-col :span="16">
+                                <el-radio-group v-model="selectedMode">
+                                    <el-radio size="large" label="divided">
+                                        Частичный {{materialName}}
+                                    </el-radio>
+                                    <el-radio size="large" label="full" >
+                                        Полный {{materialName}}
+                                    </el-radio>
+                                </el-radio-group>
+                            </el-col>
+                            <el-col :span="4" align="end">
+                                <el-button
+                                    type="primary"
+                                    :icon="Search"
+                                    size="large"
+                                    @click="getMaterialsData"
+                                >
+                                    Поиск
+                                </el-button>
+                            </el-col>
+                        </el-row>
                     </el-collapse-item>
 
-                    <el-collapse-item :name="'Загрузка' + materialName + '-файлов'">
+                    <el-collapse-item name="Загрузка" class="m-t-15">
                         <template #title>
                             <p class="collapse-header">
                                 Загрузка {{materialName}}-файлов
                             </p>
                         </template>
 
-<!--                        <el-upload-->
-<!--                            v-model:file-list="fileList"-->
-<!--                            ref="uploadRef"-->
-<!--                            class="upload-demo m-t-15"-->
-<!--                            multiple-->
-<!--                            :auto-upload="false"-->
-<!--                            :action="fileApiActionUrl"-->
-<!--                            v-loading="fileUploading"-->
-<!--                        >-->
-<!--                            <template #trigger>-->
-<!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
-<!--                            </template>-->
-<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
-<!--                                <el-button type="success" @click="handleUpload" class="m-r-15">-->
-<!--                                    Отправить на сервер-->
-<!--                                </el-button>-->
-<!--                            </div>-->
-<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
-<!--                                <el-button type="warning" @click="clearFiles" class="m-r-15">-->
-<!--                                    Убрать файлы-->
-<!--                                </el-button>-->
-<!--                            </div>-->
-<!--                        </el-upload>-->
+                        <!--                        <el-upload-->
+                        <!--                            v-model:file-list="fileList"-->
+                        <!--                            ref="uploadRef"-->
+                        <!--                            class="upload-demo m-t-15"-->
+                        <!--                            multiple-->
+                        <!--                            :auto-upload="false"-->
+                        <!--                            :action="fileApiActionUrl"-->
+                        <!--                            v-loading="fileUploading"-->
+                        <!--                        >-->
+                        <!--                            <template #trigger>-->
+                        <!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
+                        <!--                            </template>-->
+                        <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+                        <!--                                <el-button type="success" @click="handleUpload" class="m-r-15">-->
+                        <!--                                    Отправить на сервер-->
+                        <!--                                </el-button>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+                        <!--                                <el-button type="warning" @click="clearFiles" class="m-r-15">-->
+                        <!--                                    Убрать файлы-->
+                        <!--                                </el-button>-->
+                        <!--                            </div>-->
+                        <!--                        </el-upload>-->
 
                         <!--TODO mock данные, потом удалить-->
                         <el-upload
@@ -72,36 +99,10 @@
                                 </el-button>
                             </div>
                         </el-upload>
-
                     </el-collapse-item>
                 </el-collapse>
             </el-row>
-
-            <el-row :gutter="25" class="m-t-15" align="middle">
-                <el-col :span="4">
-                    Режим
-                </el-col>
-                <el-col :span="16">
-                    <el-radio-group v-model="selectedMode">
-                        <el-radio size="large" label="divided">
-                            Частичный {{materialName}}
-                        </el-radio>
-                        <el-radio size="large" label="full" >
-                            Полный {{materialName}}
-                        </el-radio>
-                    </el-radio-group>
-                </el-col>
-                <el-col :span="4" align="end">
-                    <el-button
-                        type="primary"
-                        :icon="Search"
-                        size="large"
-                        @click="getMaterialsData"
-                    >
-                        Поиск
-                    </el-button>
-                </el-col>
-            </el-row>
+            </el-card>
             <template v-if="resultsVisible">
                 <el-row :gutter="25" class="m-t-15" align="middle">
                     <el-col>
@@ -148,7 +149,7 @@ const props = defineProps({
     },
 })
 const materialName = unref(props.fileType)
-
+const activeNames = ref('Поиск')
 const uploadRef = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
 const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${materialName.toLocaleLowerCase()}_file/`
