@@ -92,17 +92,35 @@
 
     <el-card class="m-t-15">
         <el-table :data="mockObjects" border>
-            <el-table-column v-for="key in mockKeys" :key="key" :prop="key" :label="key" width="250" />
+            <el-table-column
+                v-for="key in mockKeys"
+                :key="key"
+                :prop="key"
+                :label="key"
+                :width="calculateSize(mockObjects[0][key], 100, 800)"
+            />
+            <el-table-column label="Скачать" width="150" fixed="right" >
+                <template class="centered-cell" #default="scope">
+                    <el-button
+                        size="default"
+                        @click="handleDownload(scope.$index, scope.row, scope)"
+                        :icon="UploadFilled"
+                        :loading-icon="Eleme"
+                        :loading="tableDownloadButtons[scope.$index].loading"
+                    ></el-button>
+                </template>
+            </el-table-column>
         </el-table>
     </el-card>
 </template>
 
 <script setup lang="ts">
-import { Search } from '@element-plus/icons-vue'
+import { Search, UploadFilled, Eleme } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue'
 import { Api } from '@/api'
 import {UploadInstance, UploadUserFile} from "element-plus";
 import axios from "axios";
+import {calculateSize} from "@/helpers/Utils";
 
 const fileName = ref('')
 const fileExtension = ref('')
@@ -147,14 +165,33 @@ const clearFiles = () => {
 
 const mockObj = reactive({
     'Идентификатор': 'c5434530fs-sdas-hfdghf',
-    'default group': 'adult-creation-date 2015-07-29',
-    'submitions details': 'null',
-    'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-    'title and author': JSON.stringify({author: 'Jackson Peter', title: 'Test'}),
-    'test': 'test null',
-    'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-    'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-    'one of': null,
+    'Название файла': 'adult-creation-date 2015-07-29',
+    'Расширение файла': 'cif',
+    'Содержимое файла': `# AFLOW.org Repositories
+        # Ag2C4Ca1H4N4O2S4   [MCLC,MCLC1,mS84] (ST  [MCL,MCL,mP84] (STD_CONV doi:10.1016/j.commatsci.2010.05.010)
+        data_Ag2C4Ca1H4N4O2S4
+        _pd_phase_name Ag2C4Ca1H4N4O2S4
+        _cell_length_a  7.8170943150
+        _cell_length_b  23.1024398085
+        _cell_length_c  8.1669723027
+        _cell_angle_alpha  81.9286787941
+        _cell_angle_beta  90.0000000000
+        _cell_angle_gamma  90.0000000000
+        _symmetry_space_group_name_H-M  'P1'
+        _symmetry_Int_Tables_Number  1
+        loop_
+        _symmetry_equiv_pos_site_id
+        _symmetry_equiv_pos_as_xyz
+          1  x,y,z
+        loop_
+         _atom_site_label
+         _atom_site_occupancy
+         _atom_site_fract_x
+         _atom_site_fract_y
+         _atom_site_fract_z
+         _atom_site_thermal_displace_type
+         _atom_site_B_iso_or_equiv
+         _atom_site_type_symbol`,
 })
 
 const mockKeys = reactive(Object.keys(mockObj))
@@ -162,25 +199,63 @@ const mockKeys = reactive(Object.keys(mockObj))
 const mockObjects = reactive([
     {
         'Идентификатор': 'c5434530fs-sdas-hfdghf',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
+        'Название файла': 'adult-creation-date 2015-07-29',
+        'Расширение файла': 'cif',
+        'Содержимое файла': `# AFLOW.org Repositories
+        # Ag2C4Ca1H4N4O2S4   [MCLC,MCLC1,mS84] (ST  [MCL,MCL,mP84] (STD_CONV doi:10.1016/j.commatsci.2010.05.010)
+        data_Ag2C4Ca1H4N4O2S4
+        _pd_phase_name Ag2C4Ca1H4N4O2S4
+        _cell_length_a  7.8170943150
+        _cell_length_b  23.1024398085
+        _cell_length_c  8.1669723027
+        _cell_angle_alpha  81.9286787941
+        _cell_angle_beta  90.0000000000
+        _cell_angle_gamma  90.0000000000
+        _symmetry_space_group_name_H-M  'P1'
+        _symmetry_Int_Tables_Number  1
+        loop_
+        _symmetry_equiv_pos_site_id
+        _symmetry_equiv_pos_as_xyz
+          1  x,y,z
+        loop_
+         _atom_site_label
+         _atom_site_occupancy
+         _atom_site_fract_x
+         _atom_site_fract_y
+         _atom_site_fract_z
+         _atom_site_thermal_displace_type
+         _atom_site_B_iso_or_equiv
+         _atom_site_type_symbol`,
     },
     {
-        'Идентификатор': 'berbsbfb-sdfsdf45-hh544',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': 'test null',
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
+        'Идентификатор': 'c5434530fs-sdas-hfdghf',
+        'Название файла': 'adult-creation-date 2015-07-29',
+        'Расширение файла': 'cif',
+        'Содержимое файла': `# AFLOW.org Repositories
+        # Ag2C4Ca1H4N4O2S4   [MCLC,MCLC1,mS84] (ST  [MCL,MCL,mP84] (STD_CONV doi:10.1016/j.commatsci.2010.05.010)
+        data_Ag2C4Ca1H4N4O2S4
+        _pd_phase_name Ag2C4Ca1H4N4O2S4
+        _cell_length_a  7.8170943150
+        _cell_length_b  23.1024398085
+        _cell_length_c  8.1669723027
+        _cell_angle_alpha  81.9286787941
+        _cell_angle_beta  90.0000000000
+        _cell_angle_gamma  90.0000000000
+        _symmetry_space_group_name_H-M  'P1'
+        _symmetry_Int_Tables_Number  1
+        loop_
+        _symmetry_equiv_pos_site_id
+        _symmetry_equiv_pos_as_xyz
+          1  x,y,z
+        loop_
+         _atom_site_label
+         _atom_site_occupancy
+         _atom_site_fract_x
+         _atom_site_fract_y
+         _atom_site_fract_z
+         _atom_site_thermal_displace_type
+         _atom_site_B_iso_or_equiv
+         _atom_site_type_symbol`,
     },
 ])
 
@@ -189,6 +264,27 @@ mockObjects.forEach(chemicalData => {
         chemicalData[key] = JSON.stringify(value)
     })
 })
+
+const filesCount = ref(10)
+const delimeter = ref(1)
+
+const tableDownloadButtons: Record<any, any> = ref([])
+for (let i = 0; i < filesCount.value; i += 1) {
+    tableDownloadButtons.value.push({loading: false})
+}
+const handleDownload = async (index: number, row: any, scope: any) => {
+    tableDownloadButtons.value[index].loading = true;
+
+    // TODO Загрузка файла
+    await new Promise((resolve => {
+        setTimeout(resolve, 2000)
+    }))
+
+    tableDownloadButtons.value[index].loading = false;
+
+    // console.log(index, row)
+    // console.log('scope', scope)
+}
 </script>
 
 <style scoped>
