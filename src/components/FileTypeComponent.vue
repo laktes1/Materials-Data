@@ -21,7 +21,7 @@
                             <el-col :span="4">
                                 <h3>Режим поиска</h3>
                             </el-col>
-                            <el-col :span="16">
+                            <el-col :span="12">
                                 <el-radio-group v-model="selectedMode">
                                     <el-radio size="large" label="divided">
                                         Частичный {{materialName}}
@@ -31,7 +31,7 @@
                                     </el-radio>
                                 </el-radio-group>
                             </el-col>
-                            <el-col :span="4" align="end">
+                            <el-col :span="8" align="end">
                                 <el-button
                                     type="primary"
                                     :icon="Search"
@@ -126,13 +126,24 @@
                     :label="key"
                     :width="calculateSize(mockObjects[0][key], 100, 500)"
                 />
+                <el-table-column label="Скачать" width="150" fixed="right" >
+                    <template class="centered-cell" #default="scope">
+                        <el-button
+                            size="default"
+                            @click="handleDownload(scope.$index, scope.row, scope)"
+                            :icon="UploadFilled"
+                            :loading-icon="Eleme"
+                            :loading="tableDownloadButtons[scope.$index].loading"
+                        ></el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-card>
     </el-container>
 </template>
 
 <script setup lang="ts">
-import { Search } from '@element-plus/icons-vue'
+import { Search, UploadFilled, Eleme } from '@element-plus/icons-vue'
 import { ref, reactive, Ref, watch, toRaw, onMounted, unref } from 'vue'
 import { Api } from '@/api'
 import {IGetGroupsRequest} from "@/types/Requests";
@@ -198,6 +209,25 @@ const materialsCount = ref(10)
 const delimeter = ref(1)
 const structure: Record<string, any> = reactive({})
 const materials = ref([])
+
+const tableDownloadButtons: Record<any, any> = ref([])
+for (let i = 0; i < materialsCount.value; i += 1) {
+    tableDownloadButtons.value.push({loading: false})
+}
+const handleDownload = async (index: number, row: any, scope: any) => {
+    tableDownloadButtons.value[index].loading = true;
+
+    // TODO Загрузка файла
+    await new Promise((resolve => {
+        setTimeout(resolve, 2000)
+    }))
+
+    tableDownloadButtons.value[index].loading = false;
+
+    // console.log(index, row)
+    // console.log('scope', scope)
+}
+
 
 const resultsVisible = ref(false)
 const executionTime = ref('0:00:00.000000')
