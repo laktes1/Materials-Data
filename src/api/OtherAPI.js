@@ -4,8 +4,8 @@ export default {
     getGroups(request) {
         return Api.post('/get_columns/', request)
     },
-    downloadFile(id) {
-        return Api.get(`/download_file/${id}`)
+    downloadFile(request) {
+        return Api.post('/download_file/', request)
     },
     uploadFile(request) {
         return Api.post('/upload_file/', request)
