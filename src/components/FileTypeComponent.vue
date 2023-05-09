@@ -296,9 +296,12 @@ const getGroups = async () => {
         // @ts-ignore
         const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
         // selectedMode.value = response.dataViewFormat
-        console.log('...response.structure', ...response.structure)
-        groupsNames.value = [...response.structure]
-        structure.value = [...response.structure]
+        console.log('...response.structure', ...response.data.structure)
+        console.log('response.data.structure', response.data.structure)
+        groupsNames.value = [...response.data.structure]
+        structure.value = [...response.data.structure]
+        // groupsNames.value = response.data.structure
+        // structure.value = response.data.structure
     } catch (e) {
         console.error(e);
     }
