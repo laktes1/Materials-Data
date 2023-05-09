@@ -126,7 +126,7 @@
                     :label="key"
                     :width="calculateSize(mockObjects[0][key], 100, 800)"
                 />
-                <el-table-column label="Скачать" width="150" fixed="right" >
+                <el-table-column label="Скачать" width="150" fixed="right" v-if="groupsNames.length > 0">
                     <template class="centered-cell" #default="scope">
                         <el-button
                             size="default"
@@ -295,8 +295,10 @@ const getGroups = async () => {
     try {
         // @ts-ignore
         const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
-        selectedMode.value = response.dataViewFormat
+        // selectedMode.value = response.dataViewFormat
+        console.log('...response.structure', ...response.structure)
         groupsNames.value = [...response.structure]
+        structure.value = [...response.structure]
     } catch (e) {
         console.error(e);
     }
