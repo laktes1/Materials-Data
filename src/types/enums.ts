@@ -1,6 +1,6 @@
 export enum fileTypes {
-    CIF = "CIF",
-    OUT = "OUT"
+    CIF = "cif",
+    OUT = "out"
 }
 
 export enum dataViewFormats {
