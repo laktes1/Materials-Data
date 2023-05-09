@@ -51,38 +51,13 @@
                             </p>
                         </template>
 
-                        <!--                        <el-upload-->
-                        <!--                            v-model:file-list="fileList"-->
-                        <!--                            ref="uploadRef"-->
-                        <!--                            class="upload-demo m-t-15"-->
-                        <!--                            multiple-->
-                        <!--                            :auto-upload="false"-->
-                        <!--                            :action="fileApiActionUrl"-->
-                        <!--                            v-loading="fileUploading"-->
-                        <!--                        >-->
-                        <!--                            <template #trigger>-->
-                        <!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
-                        <!--                            </template>-->
-                        <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
-                        <!--                                <el-button type="success" @click="handleUpload" class="m-r-15">-->
-                        <!--                                    Отправить на сервер-->
-                        <!--                                </el-button>-->
-                        <!--                            </div>-->
-                        <!--                            <div class="el-upload el-upload&#45;&#45;text">-->
-                        <!--                                <el-button type="warning" @click="clearFiles" class="m-r-15">-->
-                        <!--                                    Очистить файлы-->
-                        <!--                                </el-button>-->
-                        <!--                            </div>-->
-                        <!--                        </el-upload>-->
-
-                        <!--TODO mock данные, потом удалить-->
                         <el-upload
                             v-model:file-list="fileList"
                             ref="uploadRef"
                             class="upload-demo m-t-15"
                             multiple
                             :auto-upload="false"
-                            :action="mockUploadUrl"
+                            :action="fileApiActionUrl"
                             v-loading="fileUploading"
                         >
                             <template #trigger>
@@ -99,6 +74,31 @@
                                 </el-button>
                             </div>
                         </el-upload>
+
+<!--                        &lt;!&ndash;TODO mock данные, потом удалить&ndash;&gt;-->
+<!--                        <el-upload-->
+<!--                            v-model:file-list="fileList"-->
+<!--                            ref="uploadRef"-->
+<!--                            class="upload-demo m-t-15"-->
+<!--                            multiple-->
+<!--                            :auto-upload="false"-->
+<!--                            :action="mockUploadUrl"-->
+<!--                            v-loading="fileUploading"-->
+<!--                        >-->
+<!--                            <template #trigger>-->
+<!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
+<!--                            </template>-->
+<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+<!--                                <el-button type="success" @click="handleUpload" class="m-r-15">-->
+<!--                                    Отправить на сервер-->
+<!--                                </el-button>-->
+<!--                            </div>-->
+<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
+<!--                                <el-button type="warning" @click="clearFiles" class="m-r-15">-->
+<!--                                    Очистить файлы-->
+<!--                                </el-button>-->
+<!--                            </div>-->
+<!--                        </el-upload>-->
                     </el-collapse-item>
                 </el-collapse>
             </el-row>
@@ -124,7 +124,7 @@
                     :key="key"
                     :prop="key"
                     :label="key"
-                    :width="calculateSize(mockObjects[0][key], 100, 500)"
+                    :width="calculateSize(mockObjects[0][key], 100, 800)"
                 />
                 <el-table-column label="Скачать" width="150" fixed="right" >
                     <template class="centered-cell" #default="scope">
@@ -170,9 +170,9 @@ const fileUploading = ref(false)
 const mockUploadUrl = ref('https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15')
 
 const handleUpload = () => {
-    if (fileUploading.value) {
-        return
-    }
+    // if (fileUploading.value) {
+    //     return
+    // }
     fileUploading.value = true
 
     const formData = new FormData()
@@ -180,10 +180,9 @@ const handleUpload = () => {
         formData.append(`file-${id}`, file.raw)
     })
 
-
-    // Api[materialName].uploadFile(formData)
     // TODO Mock-Данные удалить потом
-    axios.post(mockUploadUrl.value, formData)
+    // axios.post(mockUploadUrl.value, formData)
+    Api[materialName].uploadFile(formData)
         .then(response => {
             console.log(response.data)
         })
@@ -294,9 +293,10 @@ const getGroups = async () => {
     }
 
     try {
-        // const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
-        // selectedMode.value = response.dataViewFormat
-        // groupsNames.value = [...response.structure]
+        // @ts-ignore
+        const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
+        selectedMode.value = response.dataViewFormat
+        groupsNames.value = [...response.structure]
     } catch (e) {
         console.error(e);
     }
@@ -323,11 +323,12 @@ const getMaterialsData = async () => {
     try {
         const response = await Api[materialName].getMaterialData(request)
         executionTime.value = response.executionTime
-        resultsCount.value = response.resultsCount //TODO сказать добавить в API
-        // materials.value = response.data_from_DB
+        // resultsCount.value = response.resultsCount //TODO сказать добавить в API
+        materials.value = response.data_from_DB
         resultsVisible.value = true
         //TODO mock потом удалить эти строчки
-        mockObjects = response.data_from_DB
+        // mockObjects = response.data_from_DB
+        console.log('response', response)
 
     } catch (e) {
         console.error(e);
