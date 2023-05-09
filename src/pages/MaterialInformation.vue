@@ -3,7 +3,12 @@
 </template>
 
 <script setup lang="ts">
-
+const props = defineProps({
+    structure: {
+        type: Object,
+        required: true
+    },
+})
 </script>
 
 <style scoped>
