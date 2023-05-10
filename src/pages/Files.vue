@@ -144,9 +144,10 @@ const handleUpload = () => {
     })
 
 
-    // Api.Other.uploadFile(formData)
+    // Api.other.uploadFile(formData)
     // TODO Mock-Данные удалить потом
-    axios.post(mockUploadUrl.value, formData)
+    // axios.post(mockUploadUrl.value, formData)
+    Api.other.uploadFile(formData)
         .then(response => {
             console.log(response.data)
         })
@@ -266,7 +267,7 @@ mockObjects.forEach(chemicalData => {
 })
 
 const filesCount = ref(10)
-const delimeter = ref(1)
+const delimetr = ref(1)
 
 const tableDownloadButtons: Record<any, any> = ref([])
 for (let i = 0; i < filesCount.value; i += 1) {

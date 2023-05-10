@@ -117,7 +117,7 @@
             </template>
         </el-card>
 
-        <el-card class="m-t-15" v-loading="materialsDataLoading">
+        <el-card class="m-t-15" v-loading="materialsDataLoading" v-if="materials.length > 0">
             <el-table :data="mockObjects" border>
                 <el-table-column
                     v-for="key in groupsNames"
@@ -143,15 +143,14 @@
 </template>
 
 <script setup lang="ts">
-import { Search, UploadFilled, Eleme } from '@element-plus/icons-vue'
-import { ref, reactive, Ref, watch, toRaw, onMounted, unref } from 'vue'
-import { Api } from '@/api'
+import {Eleme, Search, UploadFilled} from '@element-plus/icons-vue'
+import {nextTick, onMounted, reactive, Ref, ref, toRaw, unref, watch} from 'vue'
+import {Api} from '@/api'
 import {IGetGroupsRequest} from "@/types/Requests";
 import {IGetGroupsResponse} from "@/types/Responses";
 import {dataViewFormats, fileTypes} from "@/types/enums";
 import SearchComponent from "@/components/searchComponent.vue";
-import type { UploadInstance, UploadUserFile } from 'element-plus'
-import axios from "axios";
+import type {UploadInstance, UploadUserFile} from 'element-plus'
 import {calculateSize} from "@/helpers/Utils";
 
 const props = defineProps({
@@ -161,7 +160,7 @@ const props = defineProps({
     },
 })
 const materialName = unref(props.fileType)
-const activeNames = ref('Поиск')
+const activeNames = ref('')
 const uploadRef = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
 const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${materialName.toLocaleLowerCase()}_file/`
@@ -205,8 +204,8 @@ const groupsLoading = ref(true)
 
 const materialsDataLoading = ref(false)
 const materialsCount = ref(10)
-const delimeter = ref(1)
-const structure: Record<string, any> = reactive({})
+const delimetr = ref(1)
+let structure: Record<any, any> = reactive({})
 const materials = ref([])
 
 const tableDownloadButtons: Record<any, any> = ref([])
@@ -231,7 +230,6 @@ const handleDownload = async (index: number, row: any, scope: any) => {
 const resultsVisible = ref(false)
 const executionTime = ref('0:00:00.000000')
 const resultsCount = ref(0)
-
 
 const mockObj = reactive({
     'Идентификатор': 'c5434530fs-sdas-hfdghf',
@@ -281,9 +279,9 @@ mockObjects.forEach(chemicalData => {
         chemicalData[key] = JSON.stringify(value)
     })
 })
-groupsNames.value.forEach((group: string) => {
-    structure[group] = ''
-})
+// groupsNames.value.forEach((group: string) => {
+//     structure[group] = ''
+// })
 
 const getGroups = async () => {
     groupsLoading.value = true
@@ -294,42 +292,48 @@ const getGroups = async () => {
 
     try {
         // @ts-ignore
-        const response: IGetGroupsResponse = await Api.OTHER.getGroups(request)
+        const response: IGetGroupsResponse = await Api.other.getGroups(request)
         // selectedMode.value = response.dataViewFormat
-        console.log('...response.structure', ...response.data.structure)
         console.log('response.data.structure', response.data.structure)
-        groupsNames.value = [...response.data.structure]
-        structure.value = [...response.data.structure]
-        // groupsNames.value = response.data.structure
-        // structure.value = response.data.structure
+        // groupsNames.value = [...response.data.structure]
+        // structure.value = [...response.data.structure]
+        groupsNames.value = response.data.structure
+        // structure = reactive({})
+        // groupsNames.value.forEach((group: string) => {
+        //     structure[group] = ''
+        // })
+        structure = reactive(groupsNames.value.reduce((acc, group) => {
+            acc[group] = ''
+            return acc
+        }, {}))
+
+        activeNames.value = ''
+        await nextTick()
+        activeNames.value = 'Поиск'
     } catch (e) {
         console.error(e);
     }
 
     groupsLoading.value = false
 }
-
 watch(selectedMode, newValue => {
     getGroups()
-    groupsNames.value.forEach((group: string) => {
-        structure[group] = ''
-    })
 })
 
 const getMaterialsData = async () => {
     materialsDataLoading.value = true
     const request: any = {
         count: materialsCount.value,
-        delimeter: delimeter.value,
+        delimetr: delimetr.value,
         dataViewFormat: selectedMode.value,
         structure: toRaw(structure)
     }
 
     try {
         const response = await Api[materialName].getMaterialData(request)
-        executionTime.value = response.executionTime
+        executionTime.value = response.data.executionTime
         // resultsCount.value = response.resultsCount //TODO сказать добавить в API
-        materials.value = response.data_from_DB
+        materials.value = response.data.data_from_DB
         resultsVisible.value = true
         //TODO mock потом удалить эти строчки
         // mockObjects = response.data_from_DB

@@ -1,7 +1,7 @@
 <template>
     <el-collapse class="collapse-container">
         <el-collapse-item
-            v-for="key in Object.keys(props.structure)"
+            v-for="key in Object.keys(structure)"
             :title="key"
             :name="key"
         >
@@ -11,7 +11,7 @@
                 </el-col>
                 <el-col :span="20">
                     <el-input
-                        v-model="props.structure[key]"
+                        v-model="structure[key]"
                         clearable
                         placeholder="Значение..."
                     />
@@ -21,13 +21,17 @@
     </el-collapse>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { defineProps, toRefs } from 'vue'
+
 const props = defineProps({
     structure: {
         type: Object,
         required: true
-    },
+    }
 })
+
+const { structure } = toRefs(props)
 </script>
 
 <style scoped>
