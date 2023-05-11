@@ -118,16 +118,29 @@
         </el-card>
 
         <el-card class="m-t-15" v-loading="materialsDataLoading" v-if="materials.length > 0">
-            <el-table :data="mockObjects" border>
+            <el-table :data="materials" border>
                 <el-table-column
                     v-for="key in groupsNames"
                     :key="key"
                     :prop="key"
                     :label="key"
-                    :width="calculateSize(mockObjects[0][key], 100, 800)"
-                />
+                    :width="calculateSize(materials[0][key], 100, 800)"
+                    resizable
+                >
+                    <template #default="scope">
+                        <template v-if="scope.row[key].length > 500">
+                            <details>
+                                <summary>Длинный текст</summary>
+                                {{scope.row[key]}}
+                            </details>
+                        </template>
+                        <template v-else>
+                            {{scope.row[key]}}
+                        </template>
+                    </template>
+                </el-table-column>
                 <el-table-column label="Скачать" width="150" fixed="right" v-if="groupsNames.length > 0">
-                    <template class="centered-cell" #default="scope">
+                    <template #default="scope">
                         <el-button
                             size="default"
                             @click="handleDownload(scope.$index, scope.row, scope)"
@@ -137,6 +150,9 @@
                         ></el-button>
                     </template>
                 </el-table-column>
+
+
+
             </el-table>
         </el-card>
     </el-container>
@@ -176,7 +192,7 @@ const handleUpload = () => {
 
     const formData = new FormData()
     fileList.value.forEach((file, id) => {
-        formData.append(`file-${id}`, file.raw)
+        formData.append('files', file.raw)
     })
 
     // TODO Mock-Данные удалить потом
@@ -203,7 +219,7 @@ const selectedMode = ref('divided') as Ref<dataViewFormats>
 const groupsLoading = ref(true)
 
 const materialsDataLoading = ref(false)
-const materialsCount = ref(10)
+const materialsCount = ref(5)
 const delimetr = ref(1)
 let structure: Record<any, any> = reactive({})
 const materials = ref([])
@@ -222,8 +238,8 @@ const handleDownload = async (index: number, row: any, scope: any) => {
 
     tableDownloadButtons.value[index].loading = false;
 
-    // console.log(index, row)
-    // console.log('scope', scope)
+    console.log(index, row)
+    console.log('scope', scope)
 }
 
 
@@ -294,7 +310,7 @@ const getGroups = async () => {
         // @ts-ignore
         const response: IGetGroupsResponse = await Api.other.getGroups(request)
         // selectedMode.value = response.dataViewFormat
-        console.log('response.data.structure', response.data.structure)
+        // console.log('response.data.structure', response.data.structure)
         // groupsNames.value = [...response.data.structure]
         // structure.value = [...response.data.structure]
         groupsNames.value = response.data.structure
@@ -331,8 +347,8 @@ const getMaterialsData = async () => {
 
     try {
         const response = await Api[materialName].getMaterialData(request)
-        executionTime.value = response.data.executionTime
-        // resultsCount.value = response.resultsCount //TODO сказать добавить в API
+        executionTime.value = response.data.execution_time
+        resultsCount.value = response.data.resultsCount
         materials.value = response.data.data_from_DB
         resultsVisible.value = true
         //TODO mock потом удалить эти строчки
