@@ -156,6 +156,7 @@ const props = defineProps({
         required: true
     },
 })
+
 const materialName = unref(props.fileType)
 const activeNames = ref('')
 const uploadRef = ref<UploadInstance>()
@@ -173,11 +174,7 @@ const handleUpload = () => {
 
     Api[materialName].uploadFile(formData)
         .then(response => {
-            console.log(response.data)
             fileList.value.forEach((file, id) => {
-                console.log('id', id)
-                console.log('file', file)
-                console.log('response.data[file.name]', response.data[file.name])
                 if (response.data[file.name].status === 'successfully') {
                     file.status = 'success'
                 } else {
@@ -190,17 +187,14 @@ const handleUpload = () => {
         })
         .finally(() => {
             fileUploading.value = false // TODO сделать очистку загруженных файлов и оставить ошибочные
-            console.log('uploadRef.value', uploadRef.value)
         })
 }
 
 const clearFiles = () => {
-    // uploadRef.value!.submit()
     uploadRef.value!.clearFiles()
 }
 
 const selectedMode = ref('divided') as Ref<dataViewFormats>
-
 const groupsLoading = ref(true)
 
 const materialsDataLoading = ref(false)
@@ -216,73 +210,34 @@ for (let i = 0; i < materialsCount.value; i += 1) {
 const handleDownload = async (index: number, row: any, scope: any) => {
     tableDownloadButtons.value[index].loading = true;
 
-    // TODO Загрузка файла
-    await new Promise((resolve => {
-        setTimeout(resolve, 2000)
-    }))
+    const request: any = {
+        id: row.id
+    }
+
+    const response = await Api.other.downloadFile(request)
+
+    const href = URL.createObjectURL(response.data);
+
+    // create "a" HTML element with href to file & click
+    const link = document.createElement('a');
+    link.href = href;
+    const filename = `${row.id}.${materialName}`;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+
+    // clean up "a" element & remove ObjectURL
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
 
     tableDownloadButtons.value[index].loading = false;
-
-    console.log(index, row)
-    console.log('scope', scope)
 }
 
 
 const resultsVisible = ref(false)
 const executionTime = ref('0:00:00.000000')
 const resultsCount = ref(0)
-
-const mockObj = reactive({
-    'Идентификатор': 'c5434530fs-sdas-hfdghf',
-    'default group': 'adult-creation-date 2015-07-29',
-    'submitions details': 'null',
-    'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-    'title and author': JSON.stringify({author: 'Jackson Peter', title: 'Test'}),
-    'test': null,
-    'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-    'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-    'one of': null,
-})
-
-//TODO mock потом удалить эти строчки
-const groupsNames = ref(Object.keys(mockObj))
-// const groupsNames = ref([])
-
-//TODO mock потом удалить эти строчки
-let mockObjects = [
-    {
-        'Идентификатор': 'c5434530fs-sdas-hfdghf',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': null,
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
-    },
-    {
-        'Идентификатор': 'berbsbfb-sdfsdf45-hh544',
-        'default group': 'adult-creation-date 2015-07-29',
-        'submitions details': 'null',
-        'processing summary': {volume: '51', year: 2015, pageFirst: '14814', nameFull: 'Chen Conumun'},
-        'title and author': {author: 'Jackson Peter', title: 'Test'},
-        'test': null,
-        'chemical data': {formula: 'H2O', crystalColor: 'purple', description: 'testsetsetste', formulaUnits: 2},
-        'refinement data': {rFactor: 0.0368, wRFactor: 0.0456},
-        'one of': null,
-    },
-]
-
-//TODO mock потом удалить эти строчки
-mockObjects.forEach(chemicalData => {
-    Object.entries(chemicalData).forEach(([key, value]) => {
-        chemicalData[key] = JSON.stringify(value)
-    })
-})
-// groupsNames.value.forEach((group: string) => {
-//     structure[group] = ''
-// })
+const groupsNames = ref([])
 
 const getGroups = async () => {
     groupsLoading.value = true
@@ -294,15 +249,7 @@ const getGroups = async () => {
     try {
         // @ts-ignore
         const response: IGetGroupsResponse = await Api.other.getGroups(request)
-        // selectedMode.value = response.dataViewFormat
-        // console.log('response.data.structure', response.data.structure)
-        // groupsNames.value = [...response.data.structure]
-        // structure.value = [...response.data.structure]
         groupsNames.value = response.data.structure
-        // structure = reactive({})
-        // groupsNames.value.forEach((group: string) => {
-        //     structure[group] = ''
-        // })
         structure = reactive(groupsNames.value.reduce((acc, group) => {
             acc[group] = ''
             return acc
@@ -336,8 +283,6 @@ const getMaterialsData = async () => {
         resultsCount.value = response.data.resultsCount
         materials.value = response.data.data_from_DB
         resultsVisible.value = true
-        console.log('response', response)
-
     } catch (e) {
         console.error(e);
     }
