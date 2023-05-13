@@ -24,10 +24,10 @@
                             <el-col :span="12">
                                 <el-radio-group v-model="selectedMode">
                                     <el-radio size="large" label="divided">
-                                        Частичный {{materialName}}
+                                        Частичный {{materialName.toUpperCase()}}
                                     </el-radio>
                                     <el-radio size="large" label="full" >
-                                        Полный {{materialName}}
+                                        Полный {{materialName.toUpperCase()}}
                                     </el-radio>
                                 </el-radio-group>
                             </el-col>
@@ -74,31 +74,6 @@
                                 </el-button>
                             </div>
                         </el-upload>
-
-<!--                        &lt;!&ndash;TODO mock данные, потом удалить&ndash;&gt;-->
-<!--                        <el-upload-->
-<!--                            v-model:file-list="fileList"-->
-<!--                            ref="uploadRef"-->
-<!--                            class="upload-demo m-t-15"-->
-<!--                            multiple-->
-<!--                            :auto-upload="false"-->
-<!--                            :action="mockUploadUrl"-->
-<!--                            v-loading="fileUploading"-->
-<!--                        >-->
-<!--                            <template #trigger>-->
-<!--                                <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>-->
-<!--                            </template>-->
-<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
-<!--                                <el-button type="success" @click="handleUpload" class="m-r-15">-->
-<!--                                    Отправить на сервер-->
-<!--                                </el-button>-->
-<!--                            </div>-->
-<!--                            <div class="el-upload el-upload&#45;&#45;text">-->
-<!--                                <el-button type="warning" @click="clearFiles" class="m-r-15">-->
-<!--                                    Очистить файлы-->
-<!--                                </el-button>-->
-<!--                            </div>-->
-<!--                        </el-upload>-->
                     </el-collapse-item>
                 </el-collapse>
             </el-row>
@@ -150,11 +125,17 @@
                         ></el-button>
                     </template>
                 </el-table-column>
-
-
-
             </el-table>
         </el-card>
+        <el-row class="m-t-15" align="middle" justify="center">
+            <el-pagination
+                v-model:current-page="delimetr"
+                :page-size="materialsCount"
+                layout="prev, pager, next"
+                :total="resultsCount"
+                hide-on-single-page
+            />
+        </el-row>
     </el-container>
 </template>
 
@@ -182,12 +163,7 @@ const fileList = ref<UploadUserFile[]>([])
 const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${materialName.toLocaleLowerCase()}_file/`
 const fileUploading = ref(false)
 
-const mockUploadUrl = ref('https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15')
-
 const handleUpload = () => {
-    // if (fileUploading.value) {
-    //     return
-    // }
     fileUploading.value = true
 
     const formData = new FormData()
@@ -195,17 +171,26 @@ const handleUpload = () => {
         formData.append('files', file.raw)
     })
 
-    // TODO Mock-Данные удалить потом
-    // axios.post(mockUploadUrl.value, formData)
     Api[materialName].uploadFile(formData)
         .then(response => {
             console.log(response.data)
+            fileList.value.forEach((file, id) => {
+                console.log('id', id)
+                console.log('file', file)
+                console.log('response.data[file.name]', response.data[file.name])
+                if (response.data[file.name].status === 'successfully') {
+                    file.status = 'success'
+                } else {
+                    file.status = 'fail'
+                }
+            })
         })
         .catch(error => {
             console.error(error)
         })
         .finally(() => {
             fileUploading.value = false // TODO сделать очистку загруженных файлов и оставить ошибочные
+            console.log('uploadRef.value', uploadRef.value)
         })
 }
 
@@ -351,8 +336,6 @@ const getMaterialsData = async () => {
         resultsCount.value = response.data.resultsCount
         materials.value = response.data.data_from_DB
         resultsVisible.value = true
-        //TODO mock потом удалить эти строчки
-        // mockObjects = response.data_from_DB
         console.log('response', response)
 
     } catch (e) {
@@ -364,6 +347,16 @@ const getMaterialsData = async () => {
 
 onMounted(() => {
     getGroups()
+})
+
+watch(delimetr, async () => {
+    await getMaterialsData()
+})
+
+watch(selectedMode, () => {
+    materials.value = []
+    resultsCount.value = 0
+    resultsVisible.value = false
 })
 
 </script>
