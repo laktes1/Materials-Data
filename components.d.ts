@@ -29,14 +29,13 @@ declare module '@vue/runtime-core' {
     ElRadio: typeof import('element-plus/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElRow: typeof import('element-plus/es')['ElRow']
-    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     FileTypeComponent: typeof import('./src/components/FileTypeComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SearchComponent: typeof import('./src/components/searchComponent.vue')['default']
+    SearchComponent: typeof import('./src/components/SearchComponent.vue')['default']
     SideBarMenu: typeof import('./src/components/SideBarMenu.vue')['default']
   }
   export interface ComponentCustomProperties {

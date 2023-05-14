@@ -146,7 +146,7 @@ import {Api} from '@/api'
 import {IGetGroupsRequest} from "@/types/Requests";
 import {IGetGroupsResponse} from "@/types/Responses";
 import {dataViewFormats, fileTypes} from "@/types/enums";
-import SearchComponent from "@/components/searchComponent.vue";
+import SearchComponent from "@/components/SearchComponent.vue";
 import type {UploadInstance, UploadUserFile} from 'element-plus'
 import {calculateSize} from "@/helpers/Utils";
 

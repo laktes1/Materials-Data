@@ -4,5 +4,4 @@
 
 <script setup lang="ts">
 import {fileTypes} from "@/types/enums";
-import FileTypeComponent from "@/components/fileTypeComponent.vue";
 </script>

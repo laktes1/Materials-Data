@@ -112,6 +112,15 @@
             </el-table-column>
         </el-table>
     </el-card>
+    <el-row class="m-t-15" align="middle" justify="center">
+        <el-pagination
+            v-model:current-page="delimetr"
+            :page-size="filesOnPageCount"
+            layout="prev, pager, next"
+            :total="totalFilesCount"
+            hide-on-single-page
+        />
+    </el-row>
 </template>
 
 <script setup lang="ts">
@@ -133,23 +142,22 @@ const fileUploading = ref(false)
 const mockUploadUrl = ref('https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15')
 
 const handleUpload = () => {
-    if (fileUploading.value) {
-        return
-    }
     fileUploading.value = true
 
     const formData = new FormData()
     fileList.value.forEach((file, id) => {
-        formData.append(`file-${id}`, file.raw)
+        formData.append('files', file.raw)
     })
 
-
-    // Api.other.uploadFile(formData)
-    // TODO Mock-Данные удалить потом
-    // axios.post(mockUploadUrl.value, formData)
     Api.other.uploadFile(formData)
         .then(response => {
-            console.log(response.data)
+            fileList.value.forEach((file, id) => {
+                if (response.data[file.name].status === 'successfully') {
+                    file.status = 'success'
+                } else {
+                    file.status = 'fail'
+                }
+            })
         })
         .catch(error => {
             console.error(error)
@@ -160,7 +168,6 @@ const handleUpload = () => {
 }
 
 const clearFiles = () => {
-    // uploadRef.value!.submit()
     uploadRef.value!.clearFiles()
 }
 
@@ -266,11 +273,12 @@ mockObjects.forEach(chemicalData => {
     })
 })
 
-const filesCount = ref(10)
+const filesOnPageCount = ref(10)
+const totalFilesCount = ref(10)
 const delimetr = ref(1)
 
 const tableDownloadButtons: Record<any, any> = ref([])
-for (let i = 0; i < filesCount.value; i += 1) {
+for (let i = 0; i < filesOnPageCount.value; i += 1) {
     tableDownloadButtons.value.push({loading: false})
 }
 const handleDownload = async (index: number, row: any, scope: any) => {
