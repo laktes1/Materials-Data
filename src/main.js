@@ -4,20 +4,12 @@ import App from './App.vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import locale from 'element-plus/lib/locale/lang/ru'
-import router from '@/router/router'
-import {Api} from '@/api'
+import router from './router/router'
 
 const app = createApp(App)
 
 app
     .use(ElementPlus, { locale })
     .use(router)
-
-// const globalVariables = {
-//     $api: Api,
-// }
-//
-// console.log(globalVariables);
-// app.provide('globalVariables', globalVariables)
 
 app.mount('#app')

@@ -4,6 +4,6 @@ export enum fileTypes {
 }
 
 export enum dataViewFormats {
-    Parsed = "parsed",
-    Divided = "divided",
+    PARSED = "parsed",
+    DIVIDED = "divided",
 }
