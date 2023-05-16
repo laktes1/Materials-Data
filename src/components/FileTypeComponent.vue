@@ -142,7 +142,7 @@
 <script setup lang="ts">
 import {Eleme, Search, UploadFilled} from '@element-plus/icons-vue'
 import {nextTick, onMounted, reactive, Ref, ref, toRaw, unref, watch} from 'vue'
-import {Api} from '@/api'
+import {API} from '@/api'
 import {IGetGroupsRequest} from "@/types/Requests";
 import {IGetGroupsResponse} from "@/types/Responses";
 import {dataViewFormats, fileTypes} from "@/types/enums";
@@ -172,7 +172,7 @@ const handleUpload = () => {
         formData.append('files', file.raw)
     })
 
-    Api[fileTypeName].uploadFile(formData)
+    API[fileTypeName].uploadFile(formData)
         .then(response => {
             fileList.value.forEach((file, id) => {
                 if (response.data[file.name].status === 'successfully') {
@@ -214,7 +214,7 @@ const handleDownload = async (index: number, row: any, scope: any) => {
         id: row.id
     }
 
-    const response = await Api.other.downloadFile(request)
+    const response = await API.other.downloadFile(request)
 
     const href = URL.createObjectURL(response.data);
 
@@ -248,7 +248,7 @@ const getGroups = async () => {
 
     try {
         // @ts-ignore
-        const response: IGetGroupsResponse = await Api.other.getGroups(request)
+        const response: IGetGroupsResponse = await API.other.getGroups(request)
         groupsNames.value = response.data.structure
         structure = reactive(groupsNames.value.reduce((acc, group) => {
             acc[group] = ''
@@ -278,7 +278,7 @@ const getMaterialsData = async () => {
     }
 
     try {
-        const response = await Api[fileTypeName].getMaterialData(request)
+        const response = await API[fileTypeName].getMaterialData(request)
         executionTime.value = response.data.execution_time
         resultsCount.value = response.data.resultsCount
         materials.value = response.data.data_from_DB

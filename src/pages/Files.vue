@@ -126,7 +126,7 @@
 <script setup lang="ts">
 import { Search, UploadFilled, Eleme } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue'
-import { Api } from '@/api'
+import { API } from '@/api'
 import {UploadInstance, UploadUserFile} from "element-plus";
 import axios from "axios";
 import {calculateSize} from "@/helpers/Utils";
@@ -149,7 +149,7 @@ const handleUpload = () => {
         formData.append('files', file.raw)
     })
 
-    Api.other.uploadFile(formData)
+    API.other.uploadFile(formData)
         .then(response => {
             fileList.value.forEach((file, id) => {
                 if (response.data[file.name].status === 'successfully') {
