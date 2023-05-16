@@ -2,7 +2,7 @@
     <el-container direction="vertical" v-loading="groupsLoading">
         <el-card>
             <el-row>
-                <h2>Работа с {{materialName}}-файлами</h2>
+                <h2>Работа с {{ fileTypeName }}-файлами</h2>
             </el-row>
             <el-card>
                 <el-row class="m-t-15">
@@ -10,7 +10,7 @@
                     <el-collapse-item name="Поиск">
                         <template #title>
                             <p class="collapse-header">
-                                Поиск {{materialName}}-файлов
+                                Поиск {{ fileTypeName }}-файлов
                             </p>
                         </template>
                         <search-component :structure="structure">
@@ -24,10 +24,10 @@
                             <el-col :span="12">
                                 <el-radio-group v-model="selectedMode">
                                     <el-radio size="large" label="divided">
-                                        Частичный {{materialName.toUpperCase()}}
+                                        Частичный {{ fileTypeName.toUpperCase() }}
                                     </el-radio>
                                     <el-radio size="large" label="full" >
-                                        Полный {{materialName.toUpperCase()}}
+                                        Полный {{ fileTypeName.toUpperCase() }}
                                     </el-radio>
                                 </el-radio-group>
                             </el-col>
@@ -47,7 +47,7 @@
                     <el-collapse-item name="Загрузка" class="m-t-15">
                         <template #title>
                             <p class="collapse-header">
-                                Загрузка {{materialName}}-файлов
+                                Загрузка {{ fileTypeName }}-файлов
                             </p>
                         </template>
 
@@ -157,11 +157,11 @@ const props = defineProps({
     },
 })
 
-const materialName = unref(props.fileType)
+const fileTypeName = unref(props.fileType)
 const activeNames = ref('')
 const uploadRef = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
-const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${materialName.toLocaleLowerCase()}_file/`
+const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${fileTypeName.toLocaleLowerCase()}_file/`
 const fileUploading = ref(false)
 
 const handleUpload = () => {
@@ -172,7 +172,7 @@ const handleUpload = () => {
         formData.append('files', file.raw)
     })
 
-    Api[materialName].uploadFile(formData)
+    Api[fileTypeName].uploadFile(formData)
         .then(response => {
             fileList.value.forEach((file, id) => {
                 if (response.data[file.name].status === 'successfully') {
@@ -221,7 +221,7 @@ const handleDownload = async (index: number, row: any, scope: any) => {
     // create "a" HTML element with href to file & click
     const link = document.createElement('a');
     link.href = href;
-    const filename = `${row.id}.${materialName}`;
+    const filename = `${row.id}.${fileTypeName}`;
     link.setAttribute('download', filename);
     document.body.appendChild(link);
     link.click();
@@ -242,7 +242,7 @@ const groupsNames = ref([])
 const getGroups = async () => {
     groupsLoading.value = true
     const request: IGetGroupsRequest = {
-        fileType: materialName,
+        fileType: fileTypeName,
         dataViewFormat: selectedMode.value,
     }
 
@@ -278,7 +278,7 @@ const getMaterialsData = async () => {
     }
 
     try {
-        const response = await Api[materialName].getMaterialData(request)
+        const response = await Api[fileTypeName].getMaterialData(request)
         executionTime.value = response.data.execution_time
         resultsCount.value = response.data.resultsCount
         materials.value = response.data.data_from_DB
