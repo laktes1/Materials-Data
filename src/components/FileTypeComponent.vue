@@ -2,7 +2,14 @@
     <el-container direction="vertical" v-loading="groupsLoading">
         <el-card>
             <el-row>
-                <h2>Работа с {{ fileTypeName }}-файлами</h2>
+                <el-row>
+                    <div><h2>Работа с {{ fileTypeName }}-файлами</h2></div>
+                </el-row>
+
+               <el-row>
+                   <div><h2>Значение .env переменной с адресом апи - {{apiEnvaddress}}</h2></div>
+               </el-row>
+
             </el-row>
             <el-card>
                 <el-row class="m-t-15">
@@ -161,6 +168,7 @@ const fileTypeName = unref(props.fileType)
 const activeNames = ref('')
 const uploadRef = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
+const apiEnvaddress = `${import.meta.env.VITE_APP_API_URL}`;
 const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${fileTypeName.toLocaleLowerCase()}_file/`
 const fileUploading = ref(false)
 
