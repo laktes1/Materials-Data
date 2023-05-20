@@ -2,14 +2,7 @@
     <el-container direction="vertical" v-loading="groupsLoading">
         <el-card>
             <el-row>
-                <el-row>
-                    <div><h2>Работа с {{ fileTypeName }}-файлами</h2></div>
-                </el-row>
-
-               <el-row>
-                   <div><h2>Значение .env переменной с адресом апи - {{apiEnvaddress}}</h2></div>
-               </el-row>
-
+                <h2>Работа с {{ fileTypeName }}-файлами</h2>
             </el-row>
             <el-card>
                 <el-row class="m-t-15">
@@ -67,20 +60,31 @@
                             :action="fileApiActionUrl"
                             v-loading="fileUploading"
                         >
+                            <template #default="{ fileList }">
+                                <div class="el-upload el-upload--text">
+                                    <el-button type="success" @click="handleUpload" class="m-r-15">
+                                        Отправить на сервер
+                                    </el-button>
+                                </div>
+                                <div class="el-upload el-upload--text">
+                                    <el-button type="warning" @click="clearFiles" class="m-r-15">
+                                        Очистить файлы
+                                    </el-button>
+                                </div>
+                                <div>
+<!--                                    <ul>-->
+<!--                                        <li v-for="file in fileList" :key="file.name">-->
+<!--                                            {{ file.name }}-->
+<!--                                            {{ file.status }}-->
+<!--                                        </li>-->
+<!--                                    </ul>-->
+                                </div>
+                            </template>
                             <template #trigger>
                                 <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>
                             </template>
-                            <div class="el-upload el-upload--text">
-                                <el-button type="success" @click="handleUpload" class="m-r-15">
-                                    Отправить на сервер
-                                </el-button>
-                            </div>
-                            <div class="el-upload el-upload--text">
-                                <el-button type="warning" @click="clearFiles" class="m-r-15">
-                                    Очистить файлы
-                                </el-button>
-                            </div>
                         </el-upload>
+
                     </el-collapse-item>
                 </el-collapse>
             </el-row>
@@ -168,7 +172,6 @@ const fileTypeName = unref(props.fileType)
 const activeNames = ref('')
 const uploadRef = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
-const apiEnvaddress = `${import.meta.env.VITE_APP_API_URL}`;
 const fileApiActionUrl = `${import.meta.env.VITE_APP_API_URL}/upload_${fileTypeName.toLocaleLowerCase()}_file/`
 const fileUploading = ref(false)
 
@@ -182,19 +185,40 @@ const handleUpload = () => {
 
     API[fileTypeName].uploadFile(formData)
         .then(response => {
-            fileList.value.forEach((file, id) => {
+            fileList.value.forEach((file) => {
                 if (response.data[file.name].status === 'successfully') {
                     file.status = 'success'
                 } else {
                     file.status = 'fail'
+                    file.error = response.data[file.name].error
                 }
+            })
+
+            const uploadList = document.querySelector('.el-upload-list')
+            const uploadChildren = Array.from(uploadList!.children)
+            const files = response.data
+            const fileKeys = Object.keys(files);
+            uploadChildren.forEach((el, id) => {
+                const oldDiv = document.getElementById(`upload-list__item-info-${id}`)
+                if (oldDiv) {
+                    oldDiv.remove()
+                }
+                const div = document.createElement('div')
+                const file = files[fileKeys[id]]
+                div.classList.add('upload-list__item-info')
+                div.id = `upload-list__item-info-${id}`
+                div.innerHTML = `<div>ID файла - ${file.id}</div>`
+                if (file.error) {
+                    div.innerHTML = div.innerHTML.concat(`<div>Ошибка загрузки файла - ${file.error}</div>`)
+                }
+                el.append(div)
             })
         })
         .catch(error => {
             console.error(error)
         })
         .finally(() => {
-            fileUploading.value = false // TODO сделать очистку загруженных файлов и оставить ошибочные
+            fileUploading.value = false
         })
 }
 
@@ -240,7 +264,6 @@ const handleDownload = async (index: number, row: any, scope: any) => {
 
     tableDownloadButtons.value[index].loading = false;
 }
-
 
 const resultsVisible = ref(false)
 const executionTime = ref('0:00:00.000000')
@@ -314,6 +337,15 @@ watch(selectedMode, () => {
 
 </script>
 
-<style scoped>
-
+<style>
+.upload-list__item-info {
+    margin-left: 24px;
+    color: var(--el-text-color-regular);
+    display: inline-flex;
+    text-align: center;
+    align-items: center;
+    padding: 0 4px;
+    transition: color var(--el-transition-duration);
+    font-size: var(--el-font-size-base);
+}
 </style>
