@@ -1,6 +1,6 @@
 <template>
     <el-container direction="vertical" v-loading="groupsLoading">
-        <el-card>
+        <el-card id="materials-card">
             <el-row>
                 <h2>Работа с {{ fileTypeName }}-файлами</h2>
             </el-row>
@@ -13,9 +13,7 @@
                                 Поиск {{ fileTypeName }}-файлов
                             </p>
                         </template>
-                        <search-component :structure="structure">
-
-                        </search-component>
+                        <search-component :structure="structure" />
 
                         <el-row :gutter="25" class="m-t-15" align="middle">
                             <el-col :span="4">
@@ -95,7 +93,11 @@
             </template>
         </el-card>
 
-        <el-card class="m-t-15" v-loading="materialsDataLoading" v-if="materials.length > 0">
+        <el-card
+            class="m-t-15"
+            v-loading="materialsDataLoading"
+            v-if="materials.length > 0"
+        >
             <el-table :data="materials" border>
                 <el-table-column
                     v-for="key in groupsNames"
@@ -119,13 +121,25 @@
                 </el-table-column>
                 <el-table-column label="Скачать" width="150" fixed="right" v-if="groupsNames.length > 0">
                     <template #default="scope">
-                        <el-button
-                            size="default"
-                            @click="handleDownload(scope.$index, scope.row, scope)"
-                            :icon="UploadFilled"
-                            :loading-icon="Eleme"
-                            :loading="tableDownloadButtons[scope.$index].loading"
-                        ></el-button>
+                        <el-row :gutter="25" align="middle">
+                            <el-col :span="12" class="centered-content">
+                                <el-button
+                                    size="default"
+                                    @click="handleDownload(scope.$index, scope.row, scope)"
+                                    :icon="UploadFilled"
+                                    :loading-icon="Eleme"
+                                    :loading="tableDownloadButtons[scope.$index].loading"
+                                ></el-button>
+                            </el-col>
+
+                            <el-col :span="12" class="centered-content">
+                                <el-button
+                                    size="default"
+                                    @click="viewMaterialInfo(scope.row)"
+                                    :icon="View"
+                                ></el-button>
+                            </el-col>
+                        </el-row>
                     </template>
                 </el-table-column>
             </el-table>
@@ -139,19 +153,36 @@
                 hide-on-single-page
             />
         </el-row>
+
+        <el-card class="m-t-15" v-show="showMaterialInformation" id="smiles-card-ref">
+            <el-collapse v-model="showSmiles">
+                <el-collapse-item name="Визуализация SMILES">
+                    <template #title>
+                        <p class="collapse-header">
+                            Визуализация SMILES кодов
+                        </p>
+                    </template>
+                    <material-information
+                        :smilesCode="smilesCode"
+                        :sizes="canvasSizes"
+                    />
+                </el-collapse-item>
+            </el-collapse>
+        </el-card>
     </el-container>
 </template>
 
 <script setup lang="ts">
-import {Eleme, Search, UploadFilled} from '@element-plus/icons-vue'
-import {nextTick, onMounted, reactive, Ref, ref, toRaw, unref, watch} from 'vue'
+import {Eleme, Search, UploadFilled, View} from '@element-plus/icons-vue'
+import {computed, h, nextTick, onMounted, reactive, Ref, ref, toRaw, unref, watch} from 'vue'
 import {API} from '@/api'
-import {IGetGroupsRequest} from "@/types/Requests";
-import {IGetGroupsResponse} from "@/types/Responses";
-import {dataViewFormats, fileTypes} from "@/types/enums";
-import SearchComponent from "@/components/SearchComponent.vue";
+import {IGetGroupsRequest} from '@/types/Requests'
+import {IGetGroupsResponse} from '@/types/Responses'
+import {dataViewFormats, fileTypes} from '@/types/enums'
+import SearchComponent from '@/components/SearchComponent.vue'
 import type {UploadInstance, UploadUserFile} from 'element-plus'
-import {calculateSize} from "@/helpers/Utils";
+import {calculateSize} from '@/helpers/Utils'
+import MaterialInformation from '@/pages/MaterialInformation.vue'
 
 const props = defineProps({
     fileType: {
@@ -218,6 +249,39 @@ const clearFiles = () => {
     uploadRef.value!.clearFiles()
 }
 
+const showMaterialInformation = ref(false);
+const smilesCode = ref('OC(C(=O)O[C@H]1C[N+]2(CCCOC3=CC=CC=C3)CCC1CC2)(C1=CC=CS1)C1=CC=CS1');
+let canvasSizes = reactive({ width: null, height: null })
+const showSmiles = ref('Визуализация SMILES')
+
+const viewMaterialInfo = (row) => {
+
+    const regex = /{"smiles": "([^"]+)"}/
+    const match = row.visual_data ? row.visual_data.match(regex) : null
+    const element = document.getElementById('smiles-card-ref')
+
+    if (match) {
+        smilesCode.value = match[1]
+        showMaterialInformation.value = true
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' })
+        }
+    }
+}
+
+const materialInformation = computed(() => {
+    if (showMaterialInformation.value) {
+        return h(MaterialInformation, {
+            smilesCode: smilesCode.value,
+        });
+    }
+    return null;
+});
+
+watch(smilesCode, () => {
+    materialInformation.value;
+});
+
 const selectedMode = ref('divided') as Ref<dataViewFormats>
 const groupsLoading = ref(true)
 
@@ -226,6 +290,11 @@ const materialsCount = ref(5)
 const delimetr = ref(1)
 let structure: Record<any, any> = reactive({})
 const materials = ref([])
+
+onMounted(() => {
+    const element = document.getElementById('materials-card')
+    canvasSizes = { width: element.offsetWidth, height: element.offsetWidth }
+})
 
 const tableDownloadButtons: Record<any, any> = ref([])
 for (let i = 0; i < materialsCount.value; i += 1) {
@@ -287,9 +356,6 @@ const getGroups = async () => {
 
     groupsLoading.value = false
 }
-watch(selectedMode, newValue => {
-    getGroups()
-})
 
 const getMaterialsData = async () => {
     materialsDataLoading.value = true
@@ -318,13 +384,16 @@ onMounted(() => {
 })
 
 watch(delimetr, async () => {
+    showMaterialInformation.value = false
     await getMaterialsData()
 })
 
 watch(selectedMode, () => {
+    showMaterialInformation.value = false
     materials.value = []
     resultsCount.value = 0
     resultsVisible.value = false
+    getGroups()
 })
 
 </script>

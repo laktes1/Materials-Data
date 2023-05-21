@@ -85,3 +85,9 @@ button:focus-visible {
 .collapse-header {
   font-size: 20px;
 }
+
+.centered-content {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}

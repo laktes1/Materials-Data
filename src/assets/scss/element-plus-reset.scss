@@ -30,3 +30,7 @@ th.el-table__cell{
 .el-collapse {
   border: none !important;
 }
+
+#smiles-card-ref .el-collapse-item__content {
+  overflow-y: auto;
+}
