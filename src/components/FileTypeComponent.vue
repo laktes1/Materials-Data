@@ -71,14 +71,6 @@
                                         Очистить файлы
                                     </el-button>
                                 </div>
-                                <div>
-<!--                                    <ul>-->
-<!--                                        <li v-for="file in fileList" :key="file.name">-->
-<!--                                            {{ file.name }}-->
-<!--                                            {{ file.status }}-->
-<!--                                        </li>-->
-<!--                                    </ul>-->
-                                </div>
                             </template>
                             <template #trigger>
                                 <el-button type="primary" class="m-r-15">Загрузить файлы</el-button>
