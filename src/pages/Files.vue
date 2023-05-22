@@ -149,7 +149,7 @@ const handleUpload = () => {
         formData.append('files', file.raw)
     })
 
-    API.other.uploadFile(formData)
+    API.OTHER.uploadFile(formData)
         .then(response => {
             fileList.value.forEach((file, id) => {
                 if (response.data[file.name].status === 'successfully') {

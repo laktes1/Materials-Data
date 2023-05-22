@@ -3,7 +3,7 @@ import OtherAPI from "./OtherAPI";
 import outAPI from "./OUTAPI";
 
 export const API = {
-    cif: cifAPI,
-    other: OtherAPI,
-    out: outAPI,
+    CIF: cifAPI,
+    OTHER: OtherAPI,
+    OUT: outAPI,
 }

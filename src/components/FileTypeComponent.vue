@@ -22,10 +22,10 @@
                             <el-col :span="12">
                                 <el-radio-group v-model="selectedMode">
                                     <el-radio size="large" label="divided">
-                                        Частичный {{ fileTypeName.toUpperCase() }}
+                                        Частичный {{ fileTypeName }}
                                     </el-radio>
                                     <el-radio size="large" label="full" >
-                                        Полный {{ fileTypeName.toUpperCase() }}
+                                        Полный {{ fileTypeName }}
                                     </el-radio>
                                 </el-radio-group>
                             </el-col>
@@ -182,7 +182,7 @@ import {dataViewFormats, fileTypes} from '@/types/enums'
 import SearchComponent from '@/components/SearchComponent.vue'
 import type {UploadInstance, UploadUserFile} from 'element-plus'
 import {calculateSize} from '@/helpers/Utils'
-import MaterialInformation from '@/pages/MaterialInformation.vue'
+import MaterialInformation from '@/components/MaterialInformation.vue'
 
 const props = defineProps({
     fileType: {
@@ -191,7 +191,7 @@ const props = defineProps({
     },
 })
 
-const fileTypeName = unref(props.fileType)
+const fileTypeName = unref(props.fileType).toUpperCase()
 const activeNames = ref('')
 const uploadRef = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
@@ -307,14 +307,14 @@ const handleDownload = async (index: number, row: any, scope: any) => {
         id: row.id
     }
 
-    const response = await API.other.downloadFile(request)
+    const response = await API.OTHER.downloadFile(request)
 
     const href = URL.createObjectURL(response.data);
 
     // create "a" HTML element with href to file & click
     const link = document.createElement('a');
     link.href = href;
-    const filename = `${row.id}.${fileTypeName}`;
+    const filename = `${row.id}.${fileTypeName.toLowerCase()}`;
     link.setAttribute('download', filename);
     document.body.appendChild(link);
     link.click();
@@ -334,13 +334,13 @@ const groupsNames = ref([])
 const getGroups = async () => {
     groupsLoading.value = true
     const request: IGetGroupsRequest = {
-        fileType: fileTypeName,
+        fileType: fileTypeName.toLowerCase(),
         dataViewFormat: selectedMode.value,
     }
 
     try {
         // @ts-ignore
-        const response: IGetGroupsResponse = await API.other.getGroups(request)
+        const response: IGetGroupsResponse = await API.OTHER.getGroups(request)
         groupsNames.value = response.data.structure
         structure = reactive(groupsNames.value.reduce((acc, group) => {
             acc[group] = ''

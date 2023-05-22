@@ -33,6 +33,7 @@ declare module '@vue/runtime-core' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     FileTypeComponent: typeof import('./src/components/FileTypeComponent.vue')['default']
+    MaterialInformation: typeof import('./src/components/MaterialInformation.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchComponent: typeof import('./src/components/SearchComponent.vue')['default']
