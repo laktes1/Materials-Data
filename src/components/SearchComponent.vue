@@ -2,12 +2,14 @@
     <el-collapse class="collapse-container">
         <el-collapse-item
             v-for="key in Object.keys(structure)"
-            :title="key"
             :name="key"
         >
+            <template #title>
+                <h3> {{ key }} </h3>
+            </template>
             <el-row :gutter="25" class="m-t-15" align="middle">
                 <el-col :span="4">
-                    <h4>Поле</h4>
+                    <p>Поле</p>
                 </el-col>
                 <el-col :span="20">
                     <el-input
