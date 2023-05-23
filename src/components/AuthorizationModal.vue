@@ -30,6 +30,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 let username = ref('')
 let password = ref('')
@@ -39,11 +40,26 @@ const router = useRouter()
 
 const handleLogin = () => {
     // TODO запрос на логирование
-    router.push('/cifPage')
+    if (username.value === 'admin' && password.value === 'HqDRUj') {
+        router.push('/cifPage')
+    } else {
+        errorMessage()
+        username.value = ''
+        password.value = ''
+    }
 }
+
 const cancelLogin = () => {
     username.value = ''
     password.value = ''
+}
+
+const errorMessage = () => {
+    ElMessage({
+        showClose: true,
+        message: 'Неправильный данные',
+        type: 'error',
+    })
 }
 </script>
 
