@@ -119,7 +119,7 @@
                         </template>
                     </template>
                 </el-table-column>
-                <el-table-column label="Скачать" width="150" fixed="right" v-if="groupsNames.length > 0">
+                <el-table-column label="Дополнительно" width="150" fixed="right" v-if="groupsNames.length > 0">
                     <template #default="scope">
                         <el-row :gutter="25" align="middle">
                             <el-col :span="12" class="centered-content">
