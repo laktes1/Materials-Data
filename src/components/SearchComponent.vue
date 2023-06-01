@@ -9,7 +9,7 @@
             </template>
             <el-row :gutter="25" class="m-t-15" align="middle">
                 <el-col :span="4">
-                    <p>Поле</p>
+                    <p>Поле ввода</p>
                 </el-col>
                 <el-col :span="20">
                     <el-input

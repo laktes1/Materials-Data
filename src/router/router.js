@@ -21,11 +21,10 @@ const routes = [
         path: '/filesPage',
         component: FilesPage,
     },
-    // TODO redirect 404
     // {
     //     path: '/:pathMatch(.*)*',
     //     name: '404',
-    //     component: NotFoundView
+    //     component: NotFoundPage,
     // }
 ]
 

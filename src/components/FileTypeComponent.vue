@@ -132,7 +132,7 @@
                                 ></el-button>
                             </el-col>
 
-                            <el-col :span="12" class="centered-content">
+                            <el-col :span="12" class="centered-content" v-if="fileType==='CIF'">
                                 <el-button
                                     size="default"
                                     @click="viewMaterialInfo(scope.row)"
