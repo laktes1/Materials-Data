@@ -31,6 +31,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+// import {API} from "@/api/index.js";
+import { API } from '@/api'
+import axios from "axios";
+
 
 let username = ref('')
 let password = ref('')
@@ -40,11 +44,38 @@ const router = useRouter()
 
 const handleLogin = () => {
     // TODO запрос на логирование
-    if (username.value === 'admin' && password.value === 'HqDRUj') {
-        router.push('/cifPage')
-    } else {
-        errorMessage()
-    }
+    // if (username.value === 'admin' && password.value === 'HqDRUj') {
+    //    router.push('/cifPage')
+    // } else {
+    //    errorMessage()
+    // }
+
+    let jsonString;
+    jsonString = password.value;
+
+    API.AUTH.authorization(jsonString, username.value)
+        .then(response => {
+            if (String(response.data) === 'true') {
+              router.push('/cifPage')
+            }
+        })
+        .catch(error => {
+            console.error(error)
+            errorMessage()
+        })
+    //   let jsonString;
+    // jsonString = password.value;
+    //
+    // API.AUTH.authorization(jsonString,'http://37.75.248.232:8080/users/validate/'+username.value)
+    //     .then(response => {
+    //         if (String(response.data) === 'true') {
+    //           router.push('/cifPage')
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error(error)
+    //         errorMessage()
+    //     })
 }
 
 const cancelLogin = () => {

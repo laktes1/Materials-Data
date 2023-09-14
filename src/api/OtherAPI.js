@@ -11,5 +11,5 @@ export default {
     },
     uploadFile(request) {
         return Api.post('/upload_file/', request)
-    }
+    },
 }

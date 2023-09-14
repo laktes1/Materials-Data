@@ -2,7 +2,7 @@
     <el-container direction="vertical" v-loading="groupsLoading">
         <el-card id="materials-card">
             <el-row>
-                <h2>Работа с {{ fileTypeName }}-файлами</h2>
+                <h2>Работа с {{ fileTypeName }} HESSIAN -файлами</h2>
             </el-row>
             <el-card>
                 <el-row class="m-t-15">
@@ -132,7 +132,7 @@
                                 ></el-button>
                             </el-col>
 
-                            <el-col :span="12" class="centered-content" v-if="fileType==='CIF'">
+                            <el-col :span="12" class="centered-content">
                                 <el-button
                                     size="default"
                                     @click="viewMaterialInfo(scope.row)"
@@ -260,9 +260,9 @@ const viewMaterialInfo = (row) => {
     const match = row.visual_data ? row.visual_data.match(regex) : null
     const element = document.getElementById('smiles-card-ref')
 
+
     if (match) {
         smilesCode.value = match[1]
-
         showMaterialInformation.value = true
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' })
@@ -337,7 +337,7 @@ const getGroups = async () => {
     const request: IGetGroupsRequest = {
         fileType: fileTypeName.toLowerCase(),
         dataViewFormat: selectedMode.value,
-        type_out: "optimization"
+        type_out: "hessian"
     }
 
     try {
@@ -365,7 +365,7 @@ const getMaterialsData = async () => {
         count: materialsCount.value,
         delimetr: delimetr.value,
         dataViewFormat: selectedMode.value,
-        type_out: "optimization",
+        type_out: "hessian",
         structure: toRaw(structure)
     }
 
