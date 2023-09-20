@@ -35,6 +35,7 @@ declare module '@vue/runtime-core' {
     FileTypeComponent: typeof import('./src/components/FileTypeComponent.vue')['default']
     FileTypeComponent_hessian: typeof import('./src/components/FileTypeComponent_hessian.vue')['default']
     FileTypeComponent_optimization: typeof import('./src/components/FileTypeComponent_optimization.vue')['default']
+    FileTypeComponent_OtherType: typeof import('./src/components/FileTypeComponent_OtherType.vue')['default']
     FileTypeComponent_raman: typeof import('./src/components/FileTypeComponent_raman.vue')['default']
     FileTypeComponent_SP: typeof import('./src/components/FileTypeComponent_SP.vue')['default']
     MaterialInformation: typeof import('./src/components/MaterialInformation.vue')['default']

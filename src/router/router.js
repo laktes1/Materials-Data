@@ -6,6 +6,7 @@ import OUTHessPage from '@/pages/outHessian.vue'
 import OUTRamPage from '@/pages/outRaman.vue'
 import OUTSPPage from '@/pages/outSP.vue'
 import FilesPage from '@/pages/Files.vue'
+import OtherTypesPage from '@/pages/OtherTypes.vue'
 
 const routes = [
     {
@@ -31,6 +32,10 @@ const routes = [
     {
         path: '/outSPPage',
         component: OUTSPPage,
+    },
+    {
+        path: '/otherTypesPage',
+        component: OtherTypesPage,
     },
     {
         path: '/filesPage',

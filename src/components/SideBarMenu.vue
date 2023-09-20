@@ -19,6 +19,9 @@
         <el-menu-item index="5" route="/outSPPage">
             <span class="side-bar-menu__title" slot="title">OUT single point</span>
         </el-menu-item>
+        <el-menu-item index="6" route="/otherTypesPage">
+            <span class="side-bar-menu__title" slot="title">OtherTypes</span>
+        </el-menu-item>
 <!--        //TODO разкоментить, когда будет готова /filesPage-->
 <!--        <el-menu-item index="3" route="/filesPage">-->
 <!--            <span class="side-bar-menu__title" slot="title">Все файлы</span>-->
